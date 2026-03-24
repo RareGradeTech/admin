@@ -762,36 +762,134 @@
             margin-top: 4px;
             display: block;
         }
-        /* GOOGLE AUTH LOGIN SCREEN */
+        /* MODERN PROFESSIONAL GOOGLE AUTH LOGIN SCREEN */
         #loginScreen {
             position: fixed;
             inset: 0;
-            background: linear-gradient(135deg, #f4f7f6, #e8f0ff);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
             flex-direction: column;
-            gap: 24px;
+            gap: 32px;
+            overflow: hidden;
+        }
+        #loginCard {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #loginCard:hover {
+            transform: translateY(-4px);
+        }
+        .login-logo {
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(135deg, var(--accent), #5856d6);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 10px 15px -3px rgb(0 122 255 / 0.3);
+        }
+        .login-title {
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, #1d1d1f, #5856d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .login-subtitle {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+        .google-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            width: 100%;
+            box-shadow: 0 10px 15px -3px rgb(66 133 244 / 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .google-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgb(66 133 244 / 0.5);
+        }
+        .google-btn img {
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            padding: 4px;
+        }
+        .login-footer {
+            margin-top: 32px;
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .login-footer::before {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #64748b);
+        }
+        .login-footer::after {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: linear-gradient(to left, transparent, #64748b);
         }
     </style>
 </head>
 <body>
-<!-- GOOGLE AUTH LOGIN SCREEN -->
+<!-- MODERN PROFESSIONAL GOOGLE AUTH LOGIN SCREEN -->
 <div id="loginScreen">
-    <div style="text-align:center;max-width:420px;padding:40px 24px;background:white;border-radius:28px;box-shadow:var(--shadow-hover);">
-        <i data-lucide="utensils" style="width:72px;height:72px;color:var(--accent);margin-bottom:16px;"></i>
-        <h1 style="font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">VYNIX<span style="color:var(--accent);">EATS</span></h1>
-        <p style="font-size:1.15rem;color:var(--dim);margin-bottom:32px;">Admin Control Panel</p>
-        <button onclick="signInWithGoogle()" 
-                style="background:#4285f4;color:white;border:none;padding:16px 40px;border-radius:9999px;font-weight:600;font-size:1.05rem;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:320px;margin:0 auto;box-shadow:0 4px 12px rgba(66,133,244,.3);transition:var(--transition);">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png" 
-                 style="width:28px;height:28px;background:white;border-radius:50%;padding:3px;" alt="Google">
-            Sign in with Google
+    <div id="loginCard">
+        <div class="login-logo">
+            <i data-lucide="utensils" style="width:52px;height:52px;color:white;"></i>
+        </div>
+        <h1 class="login-title">VYNIX<span style="color:#007aff;">EATS</span></h1>
+        <p class="login-subtitle">Secure Admin Dashboard</p>
+        
+        <button onclick="signInWithGoogle()" class="google-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png" alt="Google">
+            Continue with Google
         </button>
-        <p style="margin-top:24px;font-size:0.85rem;color:var(--dim);max-width:280px;margin-left:auto;margin-right:auto;">
-            Only authorized administrators can access the dashboard.<br>
-            Secure Google authentication required.
+        
+        <div class="login-footer">
+            <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+            Protected by Google • Enterprise-grade security
+        </div>
+        
+        <p style="margin-top:24px;font-size:0.8rem;color:#64748b;">
+            Only verified administrators can access the control panel
         </p>
     </div>
 </div>
@@ -1687,6 +1785,17 @@
             <div class="form-group"><label>New Password</label><input type="password" id="p-new" placeholder="Min. 8 chars"></div>
         </div>
         <div class="form-group"><label>Confirm New Password</label><input type="password" id="p-confirm" placeholder="Repeat new password"></div>
+        
+        <!-- MODERN LOGOUT BUTTON ADDED HERE -->
+        <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border);">
+            <button onclick="signOutGoogle()" 
+                    class="btn btn-delete" 
+                    style="width:100%;justify-content:center;font-size:1rem;padding:14px 24px;">
+                <i data-lucide="log-out" style="width:18px;height:18px;margin-right:8px;"></i>
+                Sign Out of Google Account
+            </button>
+        </div>
+        
         <div class="modal-btn-row">
             <button class="btn btn-approve" style="flex:2;justify-content:center;" onclick="saveProfile()"><i data-lucide="save" style="width:16px;height:16px;"></i> Save Profile</button>
             <button class="btn btn-edit" style="flex:1;justify-content:center;" onclick="hideModal('profileModal')">Close</button>
