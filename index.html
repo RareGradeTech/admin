@@ -9,6 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -761,9 +762,40 @@
             margin-top: 4px;
             display: block;
         }
+        /* GOOGLE AUTH LOGIN SCREEN */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #f4f7f6, #e8f0ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            flex-direction: column;
+            gap: 24px;
+        }
     </style>
 </head>
 <body>
+<!-- GOOGLE AUTH LOGIN SCREEN -->
+<div id="loginScreen">
+    <div style="text-align:center;max-width:420px;padding:40px 24px;background:white;border-radius:28px;box-shadow:var(--shadow-hover);">
+        <i data-lucide="utensils" style="width:72px;height:72px;color:var(--accent);margin-bottom:16px;"></i>
+        <h1 style="font-size:2.4rem;font-weight:800;letter-spacing:-1px;margin-bottom:8px;">VYNIX<span style="color:var(--accent);">EATS</span></h1>
+        <p style="font-size:1.15rem;color:var(--dim);margin-bottom:32px;">Admin Control Panel</p>
+        <button onclick="signInWithGoogle()" 
+                style="background:#4285f4;color:white;border:none;padding:16px 40px;border-radius:9999px;font-weight:600;font-size:1.05rem;display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:320px;margin:0 auto;box-shadow:0 4px 12px rgba(66,133,244,.3);transition:var(--transition);">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1024px-Google_%22G%22_logo.svg.png" 
+                 style="width:28px;height:28px;background:white;border-radius:50%;padding:3px;" alt="Google">
+            Sign in with Google
+        </button>
+        <p style="margin-top:24px;font-size:0.85rem;color:var(--dim);max-width:280px;margin-left:auto;margin-right:auto;">
+            Only authorized administrators can access the dashboard.<br>
+            Secure Google authentication required.
+        </p>
+    </div>
+</div>
+
 <div id="shimmerOverlay">
     <div class="shim-sidebar">
         <div class="shim-block shim-logo"></div>
@@ -1755,6 +1787,7 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
+const auth = firebase.auth();
 const CLD = { cloudName:'dqkujefxj', uploadPreset:'banter_box', apiUrl:'https://api.cloudinary.com/v1_1' };
 async function uploadToCloudinary(file) {
     const fd = new FormData();
@@ -3316,6 +3349,49 @@ function hideImageViewer() {
 window.refreshPendingImages = function() {
     loadPendingImages();
 };
+// GOOGLE AUTH FUNCTIONS
+let currentUser = null;
+function signInWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).then((result) => {
+        currentUser = result.user;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainSidebar').style.display = 'flex';
+        document.getElementById('mainPanel').style.display = 'block';
+        const initials = currentUser.displayName ? currentUser.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'AD';
+        document.getElementById('sidebarAvatar').innerText = initials;
+        document.getElementById('sidebarName').innerText = currentUser.displayName || 'Admin User';
+        showToast(`Welcome, ${currentUser.displayName || 'Admin'}!`, 'success');
+    }).catch((error) => {
+        console.error(error);
+        showToast('Google sign-in failed: ' + error.message, 'error');
+    });
+}
+function signOutGoogle() {
+    auth.signOut().then(() => {
+        currentUser = null;
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('mainSidebar').style.display = 'none';
+        document.getElementById('mainPanel').style.display = 'none';
+        showToast('Signed out successfully', 'success');
+    });
+}
+// AUTH STATE LISTENER
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user;
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainSidebar').style.display = 'flex';
+        document.getElementById('mainPanel').style.display = 'block';
+        const initials = user.displayName ? user.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'AD';
+        document.getElementById('sidebarAvatar').innerText = initials;
+        document.getElementById('sidebarName').innerText = user.displayName || 'Admin User';
+    } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('mainSidebar').style.display = 'none';
+        document.getElementById('mainPanel').style.display = 'none';
+    }
+});
 (function(){
     const delay=2800+Math.random()*400;
     const overlay=document.getElementById('shimmerOverlay');
