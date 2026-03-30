@@ -17,7 +17,7 @@
             --bg: #f4f7f6;
             --sidebar: #ffffff;
             --text: #1d1d1f;
-            --accent: #007aff;
+            --accent: #ff751f;
             --danger: #ff3b30;
             --success: #34c759;
             --warning: #ff9500;
@@ -875,7 +875,7 @@
         <div class="login-logo">
             <i data-lucide="utensils" style="width:52px;height:52px;color:white;"></i>
         </div>
-        <h1 class="login-title">VYNIX<span style="color:#007aff;">EATS</span></h1>
+        <h1 class="login-title">VYNIX<span style="color:#ff751f;">EATS</span></h1>
         <p class="login-subtitle">Secure Admin Dashboard</p>
        
         <button onclick="signInWithGoogle()" class="google-btn">
@@ -1761,7 +1761,7 @@
         <div class="form-group">
             <label>Avatar Colour</label>
             <div class="avatar-options" id="avatarPicker">
-                <div class="avatar-opt selected" data-gradient="linear-gradient(135deg,#007aff,#5856d6)" style="background:linear-gradient(135deg,#007aff,#5856d6);" onclick="selectAvatar(this)">AD</div>
+                <div class="avatar-opt selected" data-gradient="linear-gradient(135deg,#ff751f,#5856d6)" style="background:linear-gradient(135deg,#ff751f,#5856d6);" onclick="selectAvatar(this)">AD</div>
                 <div class="avatar-opt" data-gradient="linear-gradient(135deg,#34c759,#30a84b)" style="background:linear-gradient(135deg,#34c759,#30a84b);" onclick="selectAvatar(this)">AD</div>
                 <div class="avatar-opt" data-gradient="linear-gradient(135deg,#ff3b30,#c0392b)" style="background:linear-gradient(135deg,#ff3b30,#c0392b);" onclick="selectAvatar(this)">AD</div>
                 <div class="avatar-opt" data-gradient="linear-gradient(135deg,#ff9500,#e67e22)" style="background:linear-gradient(135deg,#ff9500,#e67e22);" onclick="selectAvatar(this)">AD</div>
@@ -3140,7 +3140,7 @@ function saveAllSettings(){
     showToast('Settings saved successfully!','success');
     logHistory('System settings updated','settings');
 }
-let selectedGradient='linear-gradient(135deg,#007aff,#5856d6)';
+let selectedGradient='linear-gradient(135deg,#ff751f,#5856d6)';
 function loadProfile(){
     const p=JSON.parse(localStorage.getItem('vynix_profile')||'{}');
     document.getElementById('p-name').value=p.name||'Admin User';
