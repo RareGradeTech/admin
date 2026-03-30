@@ -85,7 +85,7 @@
         .nav-item::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 3px; background: var(--accent); transform: scaleY(0); transition: transform 0.3s ease; }
         .nav-item:hover { background: #ff751f; color: var(--text); }
         .nav-item:hover::before { transform: scaleY(0.5); }
-        .nav-item.active { background: #1d1d1f (--text); color: white; }
+        .nav-item.active { background: var(--text); color: white; }
         .nav-item.active::before { transform: scaleY(1); }
         .nav-icon { flex-shrink: 0; width: 20px; height: 20px; transition: transform 0.3s ease; }
         .nav-item:hover .nav-icon { transform: scale(1.1) rotate(5deg); }
@@ -94,7 +94,7 @@
         .notification-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; box-shadow: 0 0 0 2px white; display: none; }
         .user-profile { padding: 12px; background: var(--bg); border-radius: 16px; display: flex; align-items: center; gap: 12px; margin-top: auto; cursor: pointer; transition: var(--transition); border: 1px solid transparent; overflow: hidden; white-space: nowrap; }
         .user-profile:hover { border-color: var(--border); box-shadow: var(--shadow); }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background:(135deg, #ff751f); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; transition: transform 0.3s ease; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, #ff751f, #ff751f); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; transition: transform 0.3s ease; }
         .user-profile:hover .user-avatar { transform: scale(1.1) rotate(10deg); }
         .user-info { opacity: 0; transform: translateX(-8px); transition: opacity 0.2s ease, transform 0.2s ease; }
         .sidebar.expanded .user-info { opacity: 1; transform: translateX(0); }
@@ -106,7 +106,7 @@
         .page-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 12px; }
-        .header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #ff751f), var(--dim)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #ff751f, var(--dim)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-primary { background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 999px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: var(--transition); box-shadow: 0 4px 12px rgba(0,122,255,0.3); font-family: inherit; font-size: 0.9rem; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,122,255,0.4); }
         .btn-primary:active { transform: translateY(0); }
@@ -793,7 +793,7 @@
         .login-logo {
             width: 88px;
             height: 88px;
-            background: (135deg, var(--accent), #ff751f);
+            background: linear-gradient(135deg, #ff751f, #ff751f);
             border-radius: 24px;
             display: flex;
             align-items: center;
@@ -805,7 +805,7 @@
             font-size: 2.75rem;
             font-weight: 800;
             letter-spacing: -2px;
-            background: (90deg, #ffffff ,#ff751f );
+            background: linear-gradient(90deg, #ffffff, #ff751f);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
@@ -877,17 +877,17 @@
         </div>
         <h1 class="login-title">1<span style="color:#ff751f;">BUSKET</span></h1>
         <p class="login-subtitle">Secure Admin Dashboard</p>
-       
+     
         <button onclick="signInWithGoogle()" class="google-btn">
             <img src="https://i.postimg.cc/N0TsCcsh/download-jj-removebg-preview.png" alt="Google">
             Continue with Google
         </button>
-       
+     
         <div class="login-footer">
             <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
             Protected by Google • VynixEats-security
         </div>
-       
+     
         <p style="margin-top:24px;font-size:0.8rem;color:#64748b;">
             Only verified administrators can access the control panel
         </p>
@@ -1786,7 +1786,7 @@
                 Sign Out of Google Account
             </button>
         </div>
-       
+     
         <div class="modal-btn-row">
             <button class="btn btn-approve" style="flex:2;justify-content:center;" onclick="saveProfile()"><i data-lucide="save" style="width:16px;height:16px;"></i> Save Profile</button>
             <button class="btn btn-edit" style="flex:1;justify-content:center;" onclick="hideModal('profileModal')">Close</button>
