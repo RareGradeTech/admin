@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1BUSKET | Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <style>
+        :root {
+            --orange: #ff751f;
+            --orange-deep: #e85d00;
+            --orange-glow: rgba(255, 117, 31, 0.35);
+            --dark: #0d0d0d;
+            --dark-mid: #161616;
+            --dark-card: #1c1c1e;
+            --dark-border: rgba(255,255,255,0.07);
+            --text: #f5f5f5;
+            --text-dim: #888;
+            --text-dimmer: #555;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        /* ── Animated background ── */
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-canvas::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 15% 85%, rgba(255,117,31,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 85% 10%, rgba(255,117,31,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 50% 50%, rgba(255,117,31,0.06) 0%, transparent 60%);
+            animation: breathe 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes breathe {
+            0%   { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1;   transform: scale(1.06); }
+        }
+
+        /* Grid texture */
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 52px 52px;
+            mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 90%);
+        }
+
+        /* Floating orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.22;
+            animation: float 12s ease-in-out infinite;
+        }
+        .orb-1 { width: 520px; height: 520px; background: var(--orange); top: -180px; left: -150px; animation-delay: 0s; }
+        .orb-2 { width: 380px; height: 380px; background: #ff3d00; bottom: -120px; right: -100px; animation-delay: -4s; }
+        .orb-3 { width: 250px; height: 250px; background: #ffaa44; top: 40%; left: 55%; animation-delay: -7s; opacity: 0.12; }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33%       { transform: translate(30px, -30px) scale(1.05); }
+            66%       { transform: translate(-20px, 20px) scale(0.97); }
+        }
+
+        /* ── Layout ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* ── Left panel — brand ── */
+        .brand-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 52px 60px;
+            position: relative;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-deep));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 28px var(--orange-glow);
+            overflow: hidden;
+        }
+
+        .brand-logo-icon img {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .brand-name {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+
+        .brand-name span { color: var(--orange); }
+
+        .brand-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 0;
+        }
+
+        .brand-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,117,31,0.12);
+            border: 1px solid rgba(255,117,31,0.25);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--orange);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            width: fit-content;
+            animation: tagPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes tagPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(255,117,31,0); }
+            50%      { box-shadow: 0 0 0 6px rgba(255,117,31,0.08); }
+        }
+
+        .brand-tag .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--orange);
+            animation: blink 1.4s ease-in-out infinite;
+        }
+
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+        .brand-headline {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.4rem, 4vw, 3.4rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -1.5px;
+            color: var(--text);
+            margin-bottom: 22px;
+        }
+
+        .brand-headline .accent {
+            background: linear-gradient(90deg, var(--orange), #ffaa44);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-desc {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+            max-width: 380px;
+            font-weight: 400;
+        }
+
+        /* Stats row */
+        .brand-stats {
+            display: flex;
+            gap: 0;
+            margin-top: 40px;
+            border: 1px solid var(--dark-border);
+            border-radius: 18px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.02);
+            width: fit-content;
+        }
+
+        .stat-item {
+            padding: 18px 28px;
+            border-right: 1px solid var(--dark-border);
+            text-align: center;
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--orange);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.71rem;
+            color: var(--text-dimmer);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .brand-footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.78rem;
+            color: var(--text-dimmer);
+        }
+
+        .brand-footer svg { color: var(--orange); flex-shrink: 0; }
+
+        /* ── Right panel — login card ── */
+        .login-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 52px 60px;
+            position: relative;
+        }
+
+        /* Vertical divider */
+        .login-panel::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10%;
+            height: 80%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, var(--dark-border) 30%, var(--dark-border) 70%, transparent);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-card-header {
+            margin-bottom: 40px;
+        }
+
+        .login-subtitle {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+        }
+
+        .login-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text);
+            line-height: 1.1;
+            margin-bottom: 10px;
+        }
+
+        .login-hint {
+            font-size: 0.88rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Divider */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 28px 0;
+        }
+
+        .or-divider::before, .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--dark-border);
+        }
+
+        .or-divider span {
+            font-size: 0.74rem;
+            color: var(--text-dimmer);
+            font-weight: 500;
+        }
+
+        /* Google button */
+        .google-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 17px 28px;
+            background: white;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .google-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0);
+            transition: background 0.2s;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .google-btn:active { transform: translateY(-1px); }
+
+        .google-btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .google-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        /* Sign-in loading spinner */
+        .btn-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(0,0,0,0.15);
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        .google-btn.loading .btn-spinner { display: block; }
+        .google-btn.loading .google-icon { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Security note */
+        .security-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(255,117,31,0.07);
+            border: 1px solid rgba(255,117,31,0.15);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 22px;
+        }
+
+        .security-note svg {
+            color: var(--orange);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .security-note p {
+            font-size: 0.79rem;
+            color: var(--text-dim);
+            line-height: 1.55;
+        }
+
+        .security-note strong { color: var(--text); font-weight: 600; }
+
+        /* Access chips */
+        .access-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 28px;
+        }
+
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            font-size: 0.74rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .chip svg { color: var(--orange); }
+
+        /* Error message */
+        .error-msg {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px;
+            background: rgba(255,59,48,0.1);
+            border: 1px solid rgba(255,59,48,0.25);
+            border-radius: 12px;
+            margin-top: 16px;
+            font-size: 0.83rem;
+            color: #ff6b6b;
+        }
+        .error-msg.show { display: flex; }
+
+        /* Redirect notice */
+        .redirect-notice {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            text-align: center;
+            padding: 28px 0;
+        }
+
+        .redirect-notice.show { display: flex; }
+
+        .redirect-spinner {
+            width: 44px; height: 44px;
+            border: 3px solid rgba(255,117,31,0.2);
+            border-top-color: var(--orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .redirect-notice p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .redirect-notice strong { color: var(--orange); }
+
+        /* ── Responsive ── */
+        @media (max-width: 860px) {
+            .page { grid-template-columns: 1fr; overflow-y: auto; }
+            html, body { overflow: auto; }
+            .brand-panel { padding: 36px 28px 24px; }
+            .brand-hero { padding: 20px 0 0; }
+            .brand-headline { font-size: 2rem; }
+            .login-panel { padding: 28px 28px 48px; }
+            .login-panel::before { display: none; }
+            .brand-stats { display: none; }
+        }
+
+        /* Entrance animations */
+        .brand-panel > * { opacity: 0; animation: slideUp 0.7s cubic-bezier(0.4,0,0.2,1) forwards; }
+        .brand-logo     { animation-delay: 0.1s; }
+        .brand-hero     { animation-delay: 0.25s; }
+        .brand-footer   { animation-delay: 0.4s; }
+
+        .login-card { opacity: 0; animation: slideUp 0.7s cubic-bezier(0.4,0,0.2,1) 0.35s forwards; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background -->
+<div class="bg-canvas">
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="page">
+
+    <!-- ── LEFT BRAND PANEL ── -->
+    <div class="brand-panel">
+        <div class="brand-logo">
+            <div class="brand-logo-icon">
+                <img src="https://i.postimg.cc/X7WWgSdF/WHILTE-LOGO-1BUSKET.png" alt="1BUSKET">
+            </div>
+            <div class="brand-name">1<span>BUSKET</span></div>
+        </div>
+
+        <div class="brand-hero">
+            <div class="brand-tag">
+                <div class="dot"></div>
+                Admin Control Panel
+            </div>
+
+            <h1 class="brand-headline">
+                Manage your<br>
+                platform <span class="accent">with<br>confidence.</span>
+            </h1>
+
+            <p class="brand-desc">
+                The 1BUSKET admin dashboard gives you full control over vendors, drivers, deliveries, promotions, and platform settings — all in one place.
+            </p>
+
+            <div class="brand-stats">
+                <div class="stat-item">
+                    <div class="stat-num">R10</div>
+                    <div class="stat-label">Per km fee</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">6</div>
+                    <div class="stat-label">Store types</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">Live</div>
+                    <div class="stat-label">Firebase sync</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="brand-footer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Secured by Google Authentication &amp; Firebase
+        </div>
+    </div>
+
+    <!-- ── RIGHT LOGIN PANEL ── -->
+    <div class="login-panel">
+        <div class="login-card">
+
+            <div class="login-card-header">
+                <div class="login-subtitle">Restricted Access</div>
+                <h2 class="login-title">Welcome back,<br>Administrator.</h2>
+                <p class="login-hint">Sign in with your authorised Google account to access the control panel.</p>
+            </div>
+
+            <!-- Login form area -->
+            <div id="loginForm">
+                <button class="google-btn" id="googleBtn" onclick="signInWithGoogle()">
+                    <div class="btn-spinner"></div>
+                    <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Continue with Google
+                </button>
+
+                <div class="error-msg" id="errorMsg">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span id="errorText">Sign-in failed. Please try again.</span>
+                </div>
+
+                <div class="security-note">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <p>Only <strong>verified administrator accounts</strong> can access this panel. Unauthorised access attempts are logged and monitored.</p>
+                </div>
+
+                <div class="access-chips">
+                    <div class="chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        Vendor Management
+                    </div>
+                    <div class="chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="10" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+                        Driver Tracking
+                    </div>
+                    <div class="chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        Live Analytics
+                    </div>
+                    <div class="chip">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        System Settings
+                    </div>
+                </div>
+            </div>
+
+            <!-- Redirect notice (shown after successful login) -->
+            <div class="redirect-notice" id="redirectNotice">
+                <div class="redirect-spinner"></div>
+                <p>Signed in successfully.<br><strong>Redirecting to dashboard…</strong></p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
+        authDomain: "test-17881.firebaseapp.com",
+        projectId: "test-17881",
+        storageBucket: "test-17881.firebasestorage.app",
+        messagingSenderId: "1057428047643",
+        appId: "1:1057428047643:web:f3801c0d933225a5cd35be"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // If already signed in, go straight to dashboard
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            redirectToDashboard();
+        }
+    });
+
+    function signInWithGoogle() {
+        const btn = document.getElementById('googleBtn');
+        const errorEl = document.getElementById('errorMsg');
+
+        btn.classList.add('loading');
+        errorEl.classList.remove('show');
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider)
+            .then(result => {
+                btn.classList.remove('loading');
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('redirectNotice').classList.add('show');
+                setTimeout(() => redirectToDashboard(), 1200);
+            })
+            .catch(err => {
+                btn.classList.remove('loading');
+                const msgs = {
+                    'auth/popup-closed-by-user': 'Sign-in cancelled. Please try again.',
+                    'auth/network-request-failed': 'Network error. Check your connection.',
+                    'auth/too-many-requests': 'Too many attempts. Please wait a moment.',
+                };
+                document.getElementById('errorText').textContent = msgs[err.code] || err.message || 'Sign-in failed. Please try again.';
+                errorEl.classList.add('show');
+            });
+    }
+
+    function redirectToDashboard() {
+        window.location.href = 'index.html';
+    }
+</script>
+</body>
+</html>
