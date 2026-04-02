@@ -2785,11 +2785,11 @@ function signInWithGoogle() {
 function signOutGoogle() {
     auth.signOut().then(() => {
         currentUser = null;
-        document.getElementById('loginScreen').style.display = 'flex';
-        document.getElementById('mainSidebar').style.display = 'none';
-        document.getElementById('mainPanel').style.display = 'none';
-        showToast('Signed out successfully', 'success');
+        window.location.href = 'login.html';
+    }).catch((error) => {
+        showToast('Sign out failed: ' + error.message, 'error');
     });
+}
 }
 auth.onAuthStateChanged((user) => {
     if (user) {
