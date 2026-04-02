@@ -2,109 +2,127 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1BUSKET | Admin Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>1BUSKET | Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
+        :root {
+            --accent: #ff751f;
+            --accent-dark: #e0621a;
+            --accent-light: #fff3eb;
+            --accent-muted: #ffd9bc;
+            --bg: #fafaf8;
+            --surface: #ffffff;
+            --surface2: #f5f4f1;
+            --border: #e8e6e1;
+            --border-strong: #d1cec7;
+            --text: #1c1a17;
+            --dim: #6b6560;
+            --text-muted: #a09a92;
+            --danger: #d93025;
+            --green: #1a7a4a;
+            --radius: 16px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow: 0 4px 16px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.04);
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            overflow: hidden; position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.5;
         }
-        .bg-orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
-        .bg-orb-1 { width:500px;height:500px;background:radial-gradient(circle,rgba(255,117,31,0.15) 0%,transparent 70%);top:-150px;right:-100px; }
-        .bg-orb-2 { width:400px;height:400px;background:radial-gradient(circle,rgba(255,117,31,0.08) 0%,transparent 70%);bottom:-100px;left:-80px; }
-        .bg-orb-3 { width:300px;height:300px;background:radial-gradient(circle,rgba(88,86,214,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%); }
-        .bg-grid {
-            position:fixed;inset:0;
-            background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
-            background-size:48px 48px;pointer-events:none;z-index:0;
+
+        /* ── BACKGROUND ── */
+        .auth-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px); background-size: 40px 40px; }
+        .auth-circle { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; }
+        .auth-circle:nth-child(1) { width: 500px; height: 500px; background: radial-gradient(circle, #ffe0c8 0%, #ffd4b0 60%, transparent 100%); top: -120px; right: -80px; }
+        .auth-circle:nth-child(2) { width: 380px; height: 380px; background: radial-gradient(circle, #ffeedd 0%, transparent 70%); bottom: -80px; left: -60px; }
+        .auth-circle:nth-child(3) { width: 200px; height: 200px; background: radial-gradient(circle, #ffe8d4 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+        /* ── AUTH CARD ── */
+        .auth-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 48px 40px;
+            width: 100%; max-width: 440px;
+            position: relative; z-index: 1;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
         }
-        #loginCard {
-            position:relative;z-index:1;
-            background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);
-            border-radius:32px;
-            box-shadow:0 25px 50px -12px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.08);
-            padding:52px 44px;width:100%;max-width:420px;
-            text-align:center;
-            animation:cardIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+
+        .auth-title { font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 4px; text-align: center; letter-spacing: -0.3px; }
+        .auth-sub { color: var(--dim); font-size: 0.84rem; text-align: center; margin-bottom: 24px; line-height: 1.55; }
+
+        .gate-icon { width: 68px; height: 68px; background: var(--accent-light); border-radius: 22px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid var(--accent-muted); }
+
+        /* ── BUTTONS ── */
+        .btn-google {
+            background: var(--surface); color: var(--text);
+            border: 1.5px solid var(--border); padding: 13px 20px;
+            border-radius: 999px; font-weight: 600; font-family: inherit; font-size: 0.9rem;
+            cursor: pointer; transition: var(--transition); width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: var(--shadow-sm);
         }
-        @keyframes cardIn { from{opacity:0;transform:translateY(32px) scale(0.94);}to{opacity:1;transform:translateY(0) scale(1);} }
-        .login-logo {
-            width:88px;height:88px;
-            background:linear-gradient(135deg,#ff751f,#e0621a);
-            border-radius:24px;display:flex;align-items:center;justify-content:center;
-            margin:0 auto 24px;box-shadow:0 10px 30px rgba(255,117,31,0.4);
-            transition:transform 0.3s ease;
+        .btn-google:hover { border-color: var(--border-strong); box-shadow: var(--shadow); transform: translateY(-1px); }
+        .btn-google:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .google-icon {
+            width: 20px; height: 20px; flex-shrink: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23EA4335' d='M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'/%3E%3Cpath fill='%234285F4' d='M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'/%3E%3Cpath fill='%23FBBC05' d='M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'/%3E%3Cpath fill='%2334A853' d='M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.36-8.16 2.36-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z'/%3E%3C/svg%3E") no-repeat center/contain;
         }
-        .login-logo:hover { transform:scale(1.05) rotate(-2deg); }
-        .login-logo img { height:56px;width:auto;object-fit:contain; }
-        .login-title { font-size:2.6rem;font-weight:800;letter-spacing:-2px;color:#1d1d1f;margin-bottom:6px;line-height:1; }
-        .login-title span { color:#ff751f; }
-        .login-subtitle { font-size:1rem;color:#64748b;margin-bottom:36px;font-weight:500; }
-        .google-btn {
-            background:#ff751f;color:white;border:none;
-            padding:17px 28px;border-radius:9999px;
-            font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;
-            display:flex;align-items:center;justify-content:center;gap:14px;
-            width:100%;cursor:pointer;
-            box-shadow:0 8px 24px rgba(255,117,31,0.45);
-            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+
+        /* ── MESSAGES ── */
+        .auth-error { background: #fff1f0; border: 1px solid #fcd9d7; border-radius: 12px; padding: 11px 14px; color: var(--danger); font-size: 0.82rem; font-weight: 600; display: none; margin-bottom: 14px; text-align: left; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 480px) {
+            .auth-card { padding: 32px 22px; border-radius: 22px; }
         }
-        .google-btn:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 16px 36px rgba(255,117,31,0.55);background:#e0621a;}
-        .google-btn:active:not(:disabled){transform:translateY(0);}
-        .google-btn:disabled{opacity:0.65;cursor:not-allowed;transform:none;}
-        .google-btn img{height:26px;width:auto;border-radius:4px;}
-        .login-error {
-            background:#fff1f0;border:1px solid #fcd9d7;border-radius:12px;
-            padding:11px 14px;color:#d93025;font-size:0.84rem;font-weight:600;
-            display:none;margin-bottom:16px;text-align:left;
-        }
-        .login-footer {
-            margin-top:28px;font-size:0.82rem;color:#94a3b8;
-            display:flex;align-items:center;justify-content:center;gap:8px;
-        }
-        .login-footer::before,.login-footer::after{content:'';display:block;width:24px;height:1.5px;}
-        .login-footer::before{background:linear-gradient(to right,transparent,#cbd5e1);}
-        .login-footer::after{background:linear-gradient(to left,transparent,#cbd5e1);}
-        .login-fine{margin-top:14px;font-size:0.77rem;color:#94a3b8;line-height:1.55;}
-        @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-        .spin{animation:spin 0.8s linear infinite;display:inline-flex;}
     </style>
 </head>
 <body>
-<div class="bg-grid"></div>
-<div class="bg-orb bg-orb-1"></div>
-<div class="bg-orb bg-orb-2"></div>
-<div class="bg-orb bg-orb-3"></div>
 
-<div id="loginCard">
-    <div class="login-logo">
-        <img src="https://i.postimg.cc/X7WWgSdF/WHILTE-LOGO-1BUSKET.png" alt="1BUSKET">
+<div class="auth-bg">
+    <div class="auth-circle"></div>
+    <div class="auth-circle"></div>
+    <div class="auth-circle"></div>
+</div>
+
+<div class="auth-card">
+    <div class="gate-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     </div>
-    <h1 class="login-title">1<span>BUSKET</span></h1>
-    <p class="login-subtitle">Secure Admin Dashboard</p>
-    <div class="login-error" id="loginError"></div>
-    <button onclick="signInWithGoogle()" class="google-btn" id="googleBtn">
-        <img src="https://i.postimg.cc/N0TsCcsh/download-jj-removebg-preview.png" alt="Google">
+    <img src="https://i.postimg.cc/d30sLt05/1BUSKET-LOGO.png" alt="1BUSKET" style="height:36px;display:block;margin:0 auto 16px;">
+    <h1 class="auth-title">Admin Portal</h1>
+    <p class="auth-sub">Secure Admin Dashboard</p>
+
+    <div class="auth-error" id="loginError"></div>
+
+    <button class="btn-google" onclick="signInWithGoogle()" id="googleBtn">
+        <div class="google-icon"></div>
         Continue with Google
     </button>
-    <div class="login-footer">
-        <i data-lucide="shield-check" style="width:14px;height:14px;"></i>
-        Protected by Google · Admin only
-    </div>
-    <p class="login-fine">Only verified administrators can access the control panel.</p>
+
+    <p style="margin-top:24px;font-size:0.75rem;color:var(--text-muted);text-align:center;line-height:1.6;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px;margin-top:-2px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Protected by Google · Admin only<br>
+        Only verified administrators can access the control panel.
+    </p>
 </div>
 
 <script>
-lucide.createIcons();
-
 const firebaseConfig = {
     apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
     authDomain: "test-17881.firebaseapp.com",
@@ -117,11 +135,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// If already signed in, go directly to dashboard
+/* If already signed in, skip login and go straight to dashboard */
 auth.onAuthStateChanged(user => {
-    if (user) {
-        window.location.href = 'index.html';
-    }
+    if (user) window.location.href = 'index.html';
 });
 
 function showError(msg) { 
@@ -137,17 +153,17 @@ async function signInWithGoogle() {
     const btn = document.getElementById('googleBtn');
     hideError();
     btn.disabled = true;
-    btn.innerHTML = `<span class="spin"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></span> Signing in…`;
+    btn.innerHTML = '<span style="opacity:.65;">Signing in…</span>';
 
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
     try {
         await auth.signInWithPopup(provider);
-        // Redirect handled by onAuthStateChanged
+        /* onAuthStateChanged will fire and redirect to index.html automatically */
     } catch (e) {
         btn.disabled = false;
-        btn.innerHTML = `<img src="https://i.postimg.cc/N0TsCcsh/download-jj-removebg-preview.png" alt="Google" style="height:26px;"> Continue with Google`;
+        btn.innerHTML = '<div class="google-icon"></div> Continue with Google';
         let msg = e.message || 'Google sign-in failed. Please try again.';
         if (e.code === 'auth/popup-closed-by-user')   msg = 'Sign-in window was closed. Please try again.';
         if (e.code === 'auth/popup-blocked')           msg = 'Pop-up blocked. Please allow pop-ups for this site.';
