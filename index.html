@@ -418,7 +418,7 @@
                 <i data-lucide="settings" class="nav-icon"></i>
                 <span class="nav-text">Settings</span>
             </div>
-            <div class="nav-item" onclick="signOut()">
+            <div class="nav-item" onclick="window.location.href='login.html'">
                 <i data-lucide="log-out" class="nav-icon"></i>
                 <span class="nav-text">Sign Out</span>
             </div>
@@ -651,8 +651,7 @@ const firebaseConfig = {
     projectId: "test-17881",
     storageBucket: "test-17881.firebasestorage.app",
     messagingSenderId: "1057428047643",
-    appId: "1:1057428047643:web:f3801c0d933225a5cd35be",
-    databaseURL: "https://test-17881-default-rtdb.firebaseio.com/"
+    appId: "1:1057428047643:web:f3801c0d933225a5cd35be"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -664,15 +663,6 @@ auth.onAuthStateChanged(user => {
         window.location.href = 'login.html';
     }
 });
-
-// Sign out function wired to the Sign Out nav item
-function signOut() {
-    auth.signOut().then(() => {
-        window.location.href = 'login.html';
-    }).catch(err => {
-        showToast('Sign out failed: ' + err.message, 'error');
-    });
-}
 
 const CLD = { cloudName:'dqkujefxj', uploadPreset:'banter_box', apiUrl:'https://api.cloudinary.com/v1_1' };
 async function uploadToCloudinary(file) {
