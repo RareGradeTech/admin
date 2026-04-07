@@ -335,6 +335,11 @@
         #imageViewerModal .modal-content { background: transparent; box-shadow: none; padding: 0; width: auto; max-width: 92vw; }
         .field-warning { border-color: var(--danger) !important; background: #fff5f0 !important; }
         .warning-text { font-size: 0.7rem; color: var(--danger); margin-top: 4px; display: block; }
+
+        /* Sign Out Modal special styling */
+        .signout-icon { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg,#fff1f0,#ffe4e2); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 2px solid #ffcdc9; }
+        .btn-signout-confirm { background: #ff3b30; color: white; border: none; padding: 13px 24px; border-radius: 999px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: .92rem; display: flex; align-items: center; gap: 8px; justify-content: center; flex: 1; transition: var(--transition); box-shadow: 0 4px 12px rgba(255,59,48,.3); }
+        .btn-signout-confirm:hover { background: #c0392b; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,59,48,.4); }
     </style>
 </head>
 <body>
@@ -418,7 +423,8 @@
                 <i data-lucide="settings" class="nav-icon"></i>
                 <span class="nav-text">Settings</span>
             </div>
-            <div class="nav-item" onclick="signOut()">
+            <!-- CHANGED: now opens confirm modal instead of signing out directly -->
+            <div class="nav-item" onclick="openSignOutModal()">
                 <i data-lucide="log-out" class="nav-icon"></i>
                 <span class="nav-text">Sign Out</span>
             </div>
@@ -629,6 +635,25 @@
     </div>
 </section>
 </main>
+
+<!-- ===== SIGN OUT CONFIRMATION MODAL (NEW) ===== -->
+<div class="modal-overlay" id="signOutModal">
+    <div class="modal-content modal-sm">
+        <div class="signout-icon">
+            <i data-lucide="log-out" style="width:30px;height:30px;color:#ff3b30;"></i>
+        </div>
+        <h3>Sign Out?</h3>
+        <p>Are you sure you want to sign out of the 1BUSKET Admin panel?</p>
+        <p style="margin-top:6px;font-size:.82rem;">You will be redirected to the login page.</p>
+        <div class="modal-btn-row">
+            <button class="btn-signout-confirm" onclick="confirmSignOut()">
+                <i data-lucide="log-out" style="width:15px;height:15px;"></i> Yes, Sign Out
+            </button>
+            <button class="btn btn-edit" style="flex:1;justify-content:center;padding:13px;" onclick="hideModal('signOutModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="addVendorModal"><div class="modal-content" style="width:620px;"><h3><i data-lucide="store" style="width:22px;height:22px;color:var(--accent);"></i> Register New Vendor</h3><div style="background:#f0f8ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #c8e0ff;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:14px;">Store Type</p><div class="form-group" style="margin-bottom:0;"><label>Store Type <span style="color:var(--danger)">*</span></label><select id="av-storetype"><option value="restaurant" selected>🍽️ Restaurant</option><option value="grocery">🛒 Grocery</option><option value="alcohol">🍷 Alcohol</option><option value="health">💊 Health</option><option value="pets">🐾 Pets</option><option value="electronics">📱 Electronics</option></select></div></div><div style="background:#f8f9ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #e8ecff;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:14px;">Business Identity</p><div class="form-row"><div class="form-group"><label>Business Name <span style="color:var(--danger)">*</span></label><input type="text" id="av-name" placeholder="e.g. Pizza Palace"></div><div class="form-group"><label>Trading Name / Alias</label><input type="text" id="av-tradename" placeholder="e.g. PizzaPalace SA"></div></div><div class="form-row"><div class="form-group"><label>Cuisine / Category <span style="color:var(--danger)">*</span></label><select id="av-cuisine-cat"><option value="">Select category</option><option value="Fast Food">Fast Food</option><option value="Pizza">Pizza</option><option value="Burgers">Burgers</option><option value="Chicken">Chicken</option><option value="Sushi">Sushi</option><option value="Indian">Indian</option><option value="Chinese">Chinese</option><option value="Italian">Italian</option><option value="African">African</option><option value="Healthy / Salads">Healthy / Salads</option><option value="Desserts / Bakery">Desserts / Bakery</option><option value="Drinks / Beverages">Drinks / Beverages</option><option value="Halaal">Halaal</option><option value="Vegan / Vegetarian">Vegan / Vegetarian</option><option value="Grocery">Grocery</option><option value="Alcohol">Alcohol</option><option value="Health & Pharmacy">Health &amp; Pharmacy</option><option value="Pet Supplies">Pet Supplies</option><option value="Electronics">Electronics</option><option value="Other">Other</option></select></div><div class="form-group"><label>Cuisine Description</label><input type="text" id="av-cuisine" placeholder="e.g. Wood-fired Neapolitan pizza"></div></div><div class="form-row"><div class="form-group"><label>Business Registration No.</label><input type="text" id="av-regno" placeholder="e.g. 2021/123456/07"></div><div class="form-group"><label>VAT Number</label><input type="text" id="av-vat" placeholder="e.g. 4123456789"></div></div></div><div style="background:#f8fff9;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #d4f5e0;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--success);margin-bottom:14px;">Contact Details</p><div class="form-row"><div class="form-group"><label>Owner / Contact Person <span style="color:var(--danger)">*</span></label><input type="text" id="av-owner" placeholder="Full name of owner"></div><div class="form-group"><label>Phone Number <span style="color:var(--danger)">*</span></label><input type="tel" id="av-phone" placeholder="+27 71 000 0000"></div></div><div class="form-row"><div class="form-group"><label>Email Address <span style="color:var(--danger)">*</span></label><input type="email" id="av-email" placeholder="vendor@business.co.za"></div><div class="form-group"><label>WhatsApp Number</label><input type="tel" id="av-whatsapp" placeholder="+27 71 000 0000"></div></div><div class="form-group"><label>Website / Social Media Link</label><input type="url" id="av-website" placeholder="https://www.business.co.za or @handle"></div></div><div style="background:#fff8f0;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #fde8cc;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--warning);margin-bottom:14px;">Location</p><div id="av-loc-picker"></div><input type="hidden" id="av-lat"><input type="hidden" id="av-lng"><div class="form-group"><label>Street Address <span style="color:var(--danger)">*</span></label><input type="text" id="av-street" placeholder="e.g. 12 Main Street"></div><div class="form-row"><div class="form-group"><label>Suburb</label><input type="text" id="av-suburb" placeholder="e.g. Sandton"></div><div class="form-group"><label>City / Town <span style="color:var(--danger)">*</span></label><input type="text" id="av-city" placeholder="e.g. Johannesburg"></div></div><div class="form-row"><div class="form-group"><label>Province</label><select id="av-province"><option value="">Select province</option><option value="Gauteng">Gauteng</option><option value="Western Cape">Western Cape</option><option value="KwaZulu-Natal">KwaZulu-Natal</option><option value="Eastern Cape">Eastern Cape</option><option value="Limpopo">Limpopo</option><option value="Mpumalanga">Mpumalanga</option><option value="North West">North West</option><option value="Free State">Free State</option><option value="Northern Cape">Northern Cape</option></select></div><div class="form-group"><label>Postal Code</label><input type="text" id="av-postal" placeholder="e.g. 2196" maxlength="4"></div></div><div class="form-group"><label>Delivery Radius (km)</label><select id="av-radius"><option value="3">3 km</option><option value="5" selected>5 km</option><option value="10">10 km</option><option value="15">15 km</option><option value="20">20 km</option><option value="30">30 km</option></select></div></div><div style="background:#fdf8ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #ecdeff;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--purple);margin-bottom:14px;">Operations</p><div class="form-row"><div class="form-group"><label>Opening Time</label><input type="time" id="av-open" value="08:00"></div><div class="form-group"><label>Closing Time</label><input type="time" id="av-close" value="22:00"></div></div><div class="form-row"><div class="form-group"><label>Min. Order Value (R)</label><input type="number" id="av-minorder" placeholder="e.g. 50" min="0"></div><div class="form-group"><label>Avg. Prep Time (mins)</label><input type="number" id="av-preptime" placeholder="e.g. 20" min="5"></div></div><div class="form-group"><label>Operating Days</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;" id="av-days"><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Mon" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Mon</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Tue" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Tue</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Wed" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Wed</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Thu" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Thu</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Fri" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Fri</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Sat" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Sat</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Sun" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabel(this)"> Sun</label></div></div></div><div style="background:#fafafa;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid var(--border);"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin-bottom:14px;">Media &amp; Status</p><div class="form-row"><div class="form-group"><label>Business Logo</label><input type="file" id="av-image" accept="image/*"></div><div class="form-group"><label>Banner / Cover Image</label><input type="file" id="av-banner" accept="image/*"></div></div><div class="form-group"><label>Admin Notes</label><textarea id="av-notes" placeholder="Internal notes about this vendor…" style="min-height:60px;"></textarea></div><div class="form-group"><label>Initial Status</label><select id="av-status"><option value="pending">Pending Review</option><option value="active">Active (Auto-Approve)</option></select></div></div><div class="modal-btn-row"><button class="btn btn-approve" style="flex:2;justify-content:center;" onclick="saveNewVendor()"><i data-lucide="check" style="width:16px;height:16px;"></i> Register Vendor</button><button class="btn btn-edit" style="flex:1;justify-content:center;" onclick="hideModal('addVendorModal')">Cancel</button></div></div></div>
 <div class="modal-overlay" id="editVendorModal"><div class="modal-content" style="width:620px;"><h3><i data-lucide="edit-3" style="width:22px;height:22px;color:var(--accent);"></i> Update Vendor</h3><input type="hidden" id="ev-key"><div style="background:#f0f8ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #c8e0ff;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:14px;">Store Type</p><div class="form-group" style="margin-bottom:0;"><label>Store Type <span style="color:var(--danger)">*</span></label><select id="ev-storetype"><option value="restaurant">🍽️ Restaurant</option><option value="grocery">🛒 Grocery</option><option value="alcohol">🍷 Alcohol</option><option value="health">💊 Health</option><option value="pets">🐾 Pets</option><option value="electronics">📱 Electronics</option></select></div></div><div style="background:#f8f9ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #e8ecff;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);margin-bottom:14px;">Business Identity</p><div class="form-row"><div class="form-group"><label>Business Name <span style="color:var(--danger)">*</span></label><input type="text" id="ev-name"></div><div class="form-group"><label>Trading Name / Alias</label><input type="text" id="ev-tradename"></div></div><div class="form-row"><div class="form-group"><label>Cuisine / Category <span style="color:var(--danger)">*</span></label><select id="ev-cuisine-cat"><option value="">Select category</option><option value="Fast Food">Fast Food</option><option value="Pizza">Pizza</option><option value="Burgers">Burgers</option><option value="Chicken">Chicken</option><option value="Sushi">Sushi</option><option value="Indian">Indian</option><option value="Chinese">Chinese</option><option value="Italian">Italian</option><option value="African">African</option><option value="Healthy / Salads">Healthy / Salads</option><option value="Desserts / Bakery">Desserts / Bakery</option><option value="Drinks / Beverages">Drinks / Beverages</option><option value="Halaal">Halaal</option><option value="Vegan / Vegetarian">Vegan / Vegetarian</option><option value="Grocery">Grocery</option><option value="Alcohol">Alcohol</option><option value="Health & Pharmacy">Health &amp; Pharmacy</option><option value="Pet Supplies">Pet Supplies</option><option value="Electronics">Electronics</option><option value="Other">Other</option></select></div><div class="form-group"><label>Cuisine Description</label><input type="text" id="ev-cuisine"></div></div><div class="form-row"><div class="form-group"><label>Business Registration No.</label><input type="text" id="ev-regno"></div><div class="form-group"><label>VAT Number</label><input type="text" id="ev-vat"></div></div></div><div style="background:#f8fff9;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #d4f5e0;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--success);margin-bottom:14px;">Contact Details</p><div class="form-row"><div class="form-group"><label>Owner / Contact Person <span style="color:var(--danger)">*</span></label><input type="text" id="ev-owner"></div><div class="form-group"><label>Phone Number <span style="color:var(--danger)">*</span></label><input type="tel" id="ev-phone"></div></div><div class="form-row"><div class="form-group"><label>Email Address <span style="color:var(--danger)">*</span></label><input type="email" id="ev-email"></div><div class="form-group"><label>WhatsApp Number</label><input type="tel" id="ev-whatsapp"></div></div><div class="form-group"><label>Website / Social Media Link</label><input type="url" id="ev-website"></div></div><div style="background:#fff8f0;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #fde8cc;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--warning);margin-bottom:14px;">Location</p><div id="ev-loc-picker"></div><input type="hidden" id="ev-lat"><input type="hidden" id="ev-lng"><div class="form-group"><label>Street Address <span style="color:var(--danger)">*</span></label><input type="text" id="ev-street"></div><div class="form-row"><div class="form-group"><label>Suburb</label><input type="text" id="ev-suburb"></div><div class="form-group"><label>City / Town <span style="color:var(--danger)">*</span></label><input type="text" id="ev-city"></div></div><div class="form-row"><div class="form-group"><label>Province</label><select id="ev-province"><option value="">Select province</option><option value="Gauteng">Gauteng</option><option value="Western Cape">Western Cape</option><option value="KwaZulu-Natal">KwaZulu-Natal</option><option value="Eastern Cape">Eastern Cape</option><option value="Limpopo">Limpopo</option><option value="Mpumalanga">Mpumalanga</option><option value="North West">North West</option><option value="Free State">Free State</option><option value="Northern Cape">Northern Cape</option></select></div><div class="form-group"><label>Postal Code</label><input type="text" id="ev-postal" maxlength="4"></div></div><div class="form-group"><label>Delivery Radius (km)</label><select id="ev-radius"><option value="3">3 km</option><option value="5">5 km</option><option value="10">10 km</option><option value="15">15 km</option><option value="20">20 km</option><option value="30">30 km</option></select></div></div><div style="background:#fdf8ff;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid #ecdeff;"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--purple);margin-bottom:14px;">Operations</p><div class="form-row"><div class="form-group"><label>Opening Time</label><input type="time" id="ev-open" value="08:00"></div><div class="form-group"><label>Closing Time</label><input type="time" id="ev-close" value="22:00"></div></div><div class="form-row"><div class="form-group"><label>Min. Order Value (R)</label><input type="number" id="ev-minorder" min="0"></div><div class="form-group"><label>Avg. Prep Time (mins)</label><input type="number" id="ev-preptime" min="5"></div></div><div class="form-group"><label>Operating Days</label><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;" id="ev-days"><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Mon" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Mon</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Tue" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Tue</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Wed" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Wed</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Thu" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Thu</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Fri" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Fri</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Sat" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Sat</label><label style="display:flex;align-items:center;gap:4px;font-size:.83rem;font-weight:500;background:white;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;"><input type="checkbox" value="Sun" style="width:auto;padding:0;border:none;background:none;" onchange="toggleDayLabelEV(this)"> Sun</label></div></div></div><div style="background:#fafafa;border-radius:14px;padding:16px 18px;margin-bottom:18px;border:1px solid var(--border);"><p style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--dim);margin-bottom:14px;">Media &amp; Status</p><div id="ev-img-previews" style="display:none;margin-bottom:14px;"><div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;"><div id="ev-logo-preview-wrap" style="display:none;text-align:center;"><p style="font-size:.72rem;color:var(--dim);margin-bottom:6px;font-weight:600;">Current Logo</p><img id="ev-img" style="width:80px;height:80px;object-fit:cover;border-radius:12px;border:2px solid var(--border);"></div><div id="ev-banner-preview-wrap" style="display:none;text-align:center;"><p style="font-size:.72rem;color:var(--dim);margin-bottom:6px;font-weight:600;">Current Banner</p><img id="ev-banner-img" style="width:160px;height:80px;object-fit:cover;border-radius:12px;border:2px solid var(--border);"></div></div></div><div class="form-row"><div class="form-group"><label>Replace Logo</label><input type="file" id="ev-image" accept="image/*"></div><div class="form-group"><label>Replace Banner</label><input type="file" id="ev-banner" accept="image/*"></div></div><div class="form-group"><label>Admin Notes</label><textarea id="ev-notes" style="min-height:60px;"></textarea></div><div class="form-group"><label>Status</label><select id="ev-status"><option value="pending">Pending Review</option><option value="active">Active</option><option value="disabled">Disabled</option></select></div></div><div class="modal-btn-row"><button class="btn btn-approve" style="flex:2;justify-content:center;" onclick="saveVendorChanges()"><i data-lucide="save" style="width:16px;height:16px;"></i> Save Changes</button><button class="btn btn-edit" style="flex:1;justify-content:center;" onclick="hideModal('editVendorModal')">Cancel</button></div></div></div>
 <div class="modal-overlay" id="addDriverModal"><div class="modal-content"><h3><i data-lucide="bike" style="width:22px;height:22px;color:var(--purple);"></i> Add New Driver</h3><div class="form-row"><div class="form-group"><label>First Name</label><input type="text" id="ad-fname" placeholder="Thabo"></div><div class="form-group"><label>Last Name</label><input type="text" id="ad-lname" placeholder="Nkosi"></div></div><div class="form-row"><div class="form-group"><label>Phone Number</label><input type="tel" id="ad-phone" placeholder="+27 71 000 0000"></div><div class="form-group"><label>Email Address</label><input type="email" id="ad-email" placeholder="driver@email.com"></div></div><div class="form-row"><div class="form-group"><label>Vehicle Type</label><select id="ad-vehicle"><option value="">Select vehicle</option><option value="Motorcycle">Motorcycle</option><option value="Bicycle">Bicycle</option><option value="Car">Car</option><option value="Scooter">Scooter</option><option value="Bakkie">Bakkie</option></select></div><div class="form-group"><label>Vehicle Reg / Description</label><input type="text" id="ad-vehicledesc" placeholder="e.g. Honda CB125 — BK 21 GP"></div></div><div class="form-row"><div class="form-group"><label>ID / Passport Number</label><input type="text" id="ad-idnumber" placeholder="900101 0001 083"></div><div class="form-group"><label>Driver's License No.</label><input type="text" id="ad-license" placeholder="LN 12345678"></div></div><div class="form-group"><label>Profile Photo (optional)</label><input type="file" id="ad-image" accept="image/*"></div><div class="form-group"><label>Initial Status</label><select id="ad-status"><option value="pending">Pending Review</option><option value="active">Active (Auto-Approve)</option></select></div><div class="modal-btn-row"><button class="btn btn-approve" style="flex:2;justify-content:center;background:var(--purple);box-shadow:0 4px 12px rgba(255,117,31,.3);" onclick="saveNewDriver()"><i data-lucide="check" style="width:16px;height:16px;"></i> Register Driver</button><button class="btn btn-edit" style="flex:1;justify-content:center;" onclick="hideModal('addDriverModal')">Cancel</button></div></div></div>
@@ -658,21 +683,24 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
 
-// Redirect to login.html if not authenticated (protects the entire admin dashboard)
 auth.onAuthStateChanged(user => {
-    if (!user) {
-        window.location.href = 'login.html';
-    }
+    if (!user) { window.location.href = 'login.html'; }
 });
 
-// Sign out function wired to the Sign Out nav item
-function signOut() {
+// ===== SIGN OUT — now uses confirm modal =====
+function openSignOutModal() {
+    showModal('signOutModal');
+}
+function confirmSignOut() {
+    hideModal('signOutModal');
     auth.signOut().then(() => {
         window.location.href = 'login.html';
     }).catch(err => {
         showToast('Sign out failed: ' + err.message, 'error');
     });
 }
+// kept for any legacy references
+function signOut() { openSignOutModal(); }
 
 const CLD = { cloudName:'dqkujefxj', uploadPreset:'banter_box', apiUrl:'https://api.cloudinary.com/v1_1' };
 async function uploadToCloudinary(file) {
@@ -789,7 +817,6 @@ function updateDashboardFeeBanner() {
     const el = document.getElementById('dashFeeRateDisplay');
     if (el) el.textContent = `R${deliveryFeeConfig.ratePerKm}/km`;
 }
-// Location Picker
 class LocationPicker {
     constructor(containerId, latInputId, lngInputId, onSelect) {
         this.container = document.getElementById(containerId);
@@ -941,11 +968,12 @@ function initLocationPickers() {
 }
 document.addEventListener('DOMContentLoaded', initLocationPickers);
 setTimeout(initLocationPickers, 200);
-// Sidebar
+
 const sidebar = document.getElementById('mainSidebar');
 const mainPanel = document.getElementById('mainPanel');
 sidebar.addEventListener('mouseenter', () => { sidebar.classList.add('expanded'); mainPanel.classList.add('shifted'); });
 sidebar.addEventListener('mouseleave', () => { sidebar.classList.remove('expanded'); mainPanel.classList.remove('shifted'); });
+
 function showTab(id, el) {
     document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -957,6 +985,8 @@ function showTab(id, el) {
     if (id==='settings') { updateFeePreviewTable(); recalcFee(); }
     if (id==='pendingImages') loadPendingImages();
     if (id==='deals') renderPromos();
+    // Re-render vendor table when switching to vendors tab to ensure data shows
+    if (id==='vendors') { renderVendorTable(); }
 }
 function genID(prefix) {
     const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789", arr=new Uint8Array(6);
@@ -965,26 +995,62 @@ function genID(prefix) {
 }
 function showModal(id) { const el=document.getElementById(id); el.style.display='flex'; setTimeout(()=>{el.classList.add('active');lucide.createIcons();},10); }
 function hideModal(id) { const el=document.getElementById(id); el.classList.remove('active'); setTimeout(()=>el.style.display='none',320); }
-window.onclick = e => { if (e.target.classList.contains('modal-overlay')) ['addVendorModal','editVendorModal','addDriverModal','editDriverModal','viewDriverModal','deleteModal','disableModal','profileModal','promoModal','imageViewerModal','successApprovalModal','declineImageModal'].forEach(hideModal); };
+window.onclick = e => {
+    if (e.target.classList.contains('modal-overlay')) {
+        ['addVendorModal','editVendorModal','addDriverModal','editDriverModal','viewDriverModal',
+         'deleteModal','disableModal','profileModal','promoModal','imageViewerModal',
+         'successApprovalModal','declineImageModal','signOutModal'].forEach(hideModal);
+    }
+};
 function escS(s) { return String(s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 function fmtDate(ts) { return ts ? new Date(ts).toLocaleDateString('en-ZA') : 'N/A'; }
+
+// ===== VENDOR SYNC — fixed: force icon re-render after table injection =====
 function startVendorSync() {
-    db.ref('vendors').on('value', snap => { vendorsCache=snap.val()||{}; renderVendorTable(); updateDashboardStats(); loadPendingImages(); });
+    db.ref('vendors').on('value', snap => {
+        vendorsCache = snap.val() || {};
+        renderVendorTable();
+        updateDashboardStats();
+        loadPendingImages();
+    });
 }
+
 function renderVendorTable() {
-    const tbody=document.getElementById('vendorTableBody');
-    const vendors=Object.entries(vendorsCache).reverse();
-    if (!vendors.length) { tbody.innerHTML=`<tr><td colspan="6" class="empty-state"><i data-lucide="inbox" style="width:44px;height:44px;display:block;margin:0 auto 12px;opacity:.4;"></i>No vendors yet.<button class="btn-primary" style="margin-top:12px;" onclick="openAddVendorModal()">Add First Vendor</button></td></tr>`; lucide.createIcons(); return; }
-    tbody.innerHTML=vendors.map(([key,v])=>{
-        const avatar=v.imageURL||`https://ui-avatars.com/api/?name=${encodeURIComponent(v.name)}&background=random&color=fff&size=80&bold=true&rounded=true`;
-        const badge=statusBadge(v.status);
-        const storeTypeLabel=storeTypeLabels[v.storeType]||storeTypeLabels['restaurant'];
-        const approveBtn=v.status==='pending'?`<button class="btn btn-approve" onclick="approveVendor('${key}','${escS(v.name)}')"><i data-lucide="check" style="width:13px;height:13px;"></i> Approve</button>`:'';
-        const disBtn=v.status!=='disabled'?`<button class="btn btn-disable" onclick="openDisableModal('${key}','${escS(v.name)}','vendor','disable')"><i data-lucide="eye-off" style="width:13px;height:13px;"></i></button>`:`<button class="btn btn-enable" onclick="openDisableModal('${key}','${escS(v.name)}','vendor','enable')"><i data-lucide="eye" style="width:13px;height:13px;"></i></button>`;
-        return `<tr data-search="${v.name.toLowerCase()} ${(v.vendorID||'').toLowerCase()} ${(v.storeType||'').toLowerCase()}"><td><div class="person-info"><img src="${avatar}" class="person-avatar" alt=""><div><div style="font-weight:700;">${v.name}</div><div style="font-size:.78rem;color:var(--dim);font-family:monospace;">#${v.vendorID||'—'}</div></div></div></td><td><span style="font-size:.82rem;font-weight:600;">${storeTypeLabel}</span></td><td>${v.cuisine||'—'}</td><td>${badge}</td><td style="color:var(--dim);font-size:.88rem;">${fmtDate(v.createdAt)}</td><td><div class="btn-group">${approveBtn}<button class="btn btn-edit" onclick="openEditVendorModal('${key}')"><i data-lucide="edit-2" style="width:13px;height:13px;"></i></button>${disBtn}<button class="btn btn-delete" onclick="openDeleteModal('${key}','${escS(v.name)}','vendor')"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button></div></td></tr>`;
+    const tbody = document.getElementById('vendorTableBody');
+    if (!tbody) return;
+    const vendors = Object.entries(vendorsCache).reverse();
+    if (!vendors.length) {
+        tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i data-lucide="inbox" style="width:44px;height:44px;display:block;margin:0 auto 12px;opacity:.4;"></i>No vendors yet.<br><button class="btn-primary" style="margin-top:12px;" onclick="openAddVendorModal()">Add First Vendor</button></div></td></tr>`;
+        setTimeout(() => lucide.createIcons(), 30);
+        return;
+    }
+    tbody.innerHTML = vendors.map(([key, v]) => {
+        const avatar = v.imageURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(v.name)}&background=random&color=fff&size=80&bold=true&rounded=true`;
+        const badge = statusBadge(v.status);
+        const storeTypeLabel = storeTypeLabels[v.storeType] || storeTypeLabels['restaurant'];
+        const approveBtn = v.status === 'pending'
+            ? `<button class="btn btn-approve" onclick="approveVendor('${key}','${escS(v.name)}')"><i data-lucide="check" style="width:13px;height:13px;"></i> Approve</button>`
+            : '';
+        const disBtn = v.status !== 'disabled'
+            ? `<button class="btn btn-disable" onclick="openDisableModal('${key}','${escS(v.name)}','vendor','disable')"><i data-lucide="eye-off" style="width:13px;height:13px;"></i></button>`
+            : `<button class="btn btn-enable" onclick="openDisableModal('${key}','${escS(v.name)}','vendor','enable')"><i data-lucide="eye" style="width:13px;height:13px;"></i></button>`;
+        return `<tr data-search="${(v.name||'').toLowerCase()} ${(v.vendorID||'').toLowerCase()} ${(v.storeType||'').toLowerCase()}">
+            <td><div class="person-info"><img src="${avatar}" class="person-avatar" alt="" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(v.name)}&background=ff751f&color=fff&size=80&bold=true&rounded=true'">
+            <div><div style="font-weight:700;">${v.name||'—'}</div><div style="font-size:.78rem;color:var(--dim);font-family:monospace;">#${v.vendorID||'—'}</div></div></div></td>
+            <td><span style="font-size:.82rem;font-weight:600;">${storeTypeLabel}</span></td>
+            <td>${v.cuisine||v.cuisineCategory||'—'}</td>
+            <td>${badge}</td>
+            <td style="color:var(--dim);font-size:.88rem;">${fmtDate(v.createdAt)}</td>
+            <td><div class="btn-group">${approveBtn}
+            <button class="btn btn-edit" onclick="openEditVendorModal('${key}')"><i data-lucide="edit-2" style="width:13px;height:13px;"></i></button>
+            ${disBtn}
+            <button class="btn btn-delete" onclick="openDeleteModal('${key}','${escS(v.name)}','vendor')"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button>
+            </div></td></tr>`;
     }).join('');
-    lucide.createIcons();
+    // Always re-init icons after injecting new HTML
+    setTimeout(() => lucide.createIcons(), 30);
 }
+
 function openAddVendorModal() {
     showModal('addVendorModal');
     setTimeout(()=>{ if (!avPicker) avPicker=new LocationPicker('av-loc-picker','av-lat','av-lng'); else avPicker.clear(); },80);
@@ -1154,7 +1220,7 @@ function renderDriverTable() {
         const loginStatus=d.status==='active'?`<span style="font-size:.73rem;color:var(--success);font-weight:600;display:flex;align-items:center;gap:3px;margin-top:3px;">✓ Login enabled</span>`:`<span style="font-size:.73rem;color:var(--danger);font-weight:600;display:flex;align-items:center;gap:3px;margin-top:3px;">🔒 Login blocked</span>`;
         return `<tr data-search="${fullName.toLowerCase()} ${(d.driverID||'').toLowerCase()} ${(d.vehicleType||'').toLowerCase()}"><td><div class="person-info"><img src="${avatar}" class="person-avatar" alt=""><div><div style="font-weight:700;">${fullName}</div><div style="font-size:.76rem;color:var(--dim);font-family:monospace;">#${d.driverID||'—'}</div>${loginStatus}</div></div></td><td><div style="font-weight:600;">${d.vehicleType||'—'}</div><div style="font-size:.78rem;color:var(--dim);">${d.vehicleDesc||''}</div></td><td style="font-family:monospace;font-size:.85rem;">${d.licenseNumber||'—'}</td><td style="font-size:.88rem;">${d.phone||'—'}</td><td>${badge}</td><td style="color:var(--dim);font-size:.88rem;">${fmtDate(d.createdAt)}</td><td><div class="btn-group">${approveBtn}<button class="btn btn-edit" style="background:#f0eeff;color:var(--purple);" onclick="openViewDriverModal('${key}')"><i data-lucide="eye" style="width:13px;height:13px;"></i></button><button class="btn btn-edit" onclick="openEditDriverModal('${key}')"><i data-lucide="edit-2" style="width:13px;height:13px;"></i></button>${disBtn}<button class="btn btn-delete" onclick="openDeleteModal('${key}','${escS(fullName)}','driver')"><i data-lucide="trash-2" style="width:13px;height:13px;"></i></button></div></td></tr>`;
     }).join('');
-    lucide.createIcons();
+    setTimeout(() => lucide.createIcons(), 30);
 }
 function filterDriversByStatus(status) {
     currentDriverFilter=status;
@@ -1485,7 +1551,6 @@ function deletePromo(key){if(!confirm('Delete this deal permanently?'))return;db
 function showImageViewer(src){if(!src)return;document.getElementById('viewerImage').src=src;const modal=document.getElementById('imageViewerModal');modal.style.display='flex';setTimeout(()=>modal.classList.add('active'),10);}
 function hideImageViewer(){const modal=document.getElementById('imageViewerModal');modal.classList.remove('active');setTimeout(()=>modal.style.display='none',320);}
 window.refreshPendingImages=function(){loadPendingImages();};
-// Init
 (function(){
     const delay=2400+Math.random()*400;
     const overlay=document.getElementById('shimmerOverlay');
