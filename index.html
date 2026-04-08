@@ -18,10 +18,10 @@
             --sidebar: #ffffff;
             --text: #1d1d1f;
             --accent: #ff751f;
-            --danger: #ff751f;
-            --success: #ff751f;
-            --warning: #ff751f;
-            --purple: #ff751f;
+            --danger: #ff4444;
+            --success: #28a745;
+            --warning: #ffc107;
+            --purple: #6f42c1;
             --border: #e5e5e7;
             --dim: #8e8e93;
             --shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -37,8 +37,8 @@
         ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
         .sidebar {
-            width: var(--sidebar-collapsed);
-            background: var(--sidebar);
+            width: var(--sidebar-width);
+            background: #1d1d1f;
             border-right: 1px solid var(--border);
             padding: 24px 12px;
             position: fixed;
@@ -49,7 +49,7 @@
             transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
             overflow: hidden;
         }
-        .sidebar.expanded { width: var(--sidebar-width); padding: 30px 20px; }
+        .sidebar { width: var(--sidebar-width); padding: 30px 20px; }
         .nav-scroll {
             flex: 1;
             overflow-y: auto;
@@ -66,21 +66,20 @@
         .sidebar.expanded .nav-scroll::-webkit-scrollbar-thumb { background: var(--border); }
         .sidebar.expanded .nav-scroll::-webkit-scrollbar-thumb:hover { background: #ff751f; }
         .logo {
-            font-weight: 800; font-size: 1.6rem; margin-bottom: 40px; color: var(--text);
+            font-weight: 800; font-size: 1.6rem; margin-bottom: 40px; color: white;
             letter-spacing: -1px; display: flex; align-items: center; gap: 12px;
             white-space: nowrap; transition: var(--transition); overflow: hidden; min-width: 0;
         }
         .logo .logo-icon { flex-shrink: 0; width: 28px; height: 28px; color: var(--accent); }
         .logo .logo-text {
-            opacity: 0; transform: translateX(-10px);
+            opacity: 1; transform: translateX(0);
             transition: opacity 0.25s ease, transform 0.25s ease;
             pointer-events: none; font-size: 1.1rem; white-space: nowrap;
+            display: block;
         }
-        .sidebar.expanded .logo .logo-text { opacity: 1; transform: translateX(0); }
         .logo span { color: var(--accent); }
         .nav-section { margin-bottom: 24px; }
-        .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); margin-bottom: 12px; padding-left: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; opacity: 0; transition: opacity 0.2s ease; }
-        .sidebar.expanded .nav-label { opacity: 1; }
+        .nav-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); margin-bottom: 12px; padding-left: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; opacity: 1; transition: opacity 0.2s ease; }
         .nav-item { padding: 14px 12px; margin-bottom: 6px; border-radius: 12px; cursor: pointer; transition: var(--transition); font-weight: 600; display: flex; align-items: center; gap: 12px; color: var(--dim); position: relative; overflow: hidden; white-space: nowrap; }
         .nav-item::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 3px; background: var(--accent); transform: scaleY(0); transition: transform 0.3s ease; }
         .nav-item:hover { background: #ff751f; color: var(--text); }
@@ -89,18 +88,15 @@
         .nav-item.active::before { transform: scaleY(1); }
         .nav-icon { flex-shrink: 0; width: 20px; height: 20px; transition: transform 0.3s ease; }
         .nav-item:hover .nav-icon { transform: scale(1.1) rotate(5deg); }
-        .nav-text { opacity: 0; transform: translateX(-8px); transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none; }
-        .sidebar.expanded .nav-text { opacity: 1; transform: translateX(0); }
+        .nav-text { opacity: 1; transform: translateX(0); transition: opacity 0.2s ease, transform 0.2s ease; pointer-events: none; }
         .notification-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; box-shadow: 0 0 0 2px white; display: none; }
         .user-profile { padding: 12px; background: var(--bg); border-radius: 16px; display: flex; align-items: center; gap: 12px; margin-top: auto; cursor: pointer; transition: var(--transition); border: 1px solid transparent; overflow: hidden; white-space: nowrap; }
         .user-profile:hover { border-color: var(--border); box-shadow: var(--shadow); }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, #ff751f, #ff751f); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; transition: transform 0.3s ease; }
         .user-profile:hover .user-avatar { transform: scale(1.1) rotate(10deg); }
-        .user-info { opacity: 0; transform: translateX(-8px); transition: opacity 0.2s ease, transform 0.2s ease; }
-        .sidebar.expanded .user-info { opacity: 1; transform: translateX(0); }
-        .chevron-icon { margin-left: auto; flex-shrink: 0; opacity: 0; transition: opacity 0.2s ease; }
-        .sidebar.expanded .chevron-icon { opacity: 1; }
-        .main-panel { margin-left: var(--sidebar-collapsed); flex: 1; padding: 40px; max-width: calc(100% - var(--sidebar-collapsed)); transition: margin-left 0.35s cubic-bezier(0.4,0,0.2,1), max-width 0.35s cubic-bezier(0.4,0,0.2,1); }
+        .user-info { opacity: 1; transform: translateX(0); transition: opacity 0.2s ease, transform 0.2s ease; }
+        .chevron-icon { margin-left: auto; flex-shrink: 0; opacity: 1; transition: opacity 0.2s ease; }
+        .main-panel { margin-left: var(--sidebar-width); flex: 1; padding: 40px; max-width: calc(100% - var(--sidebar-width)); transition: margin-left 0.35s cubic-bezier(0.4,0,0.2,1), max-width 0.35s cubic-bezier(0.4,0,0.2,1); }
         .main-panel.shifted { margin-left: var(--sidebar-width); max-width: calc(100% - var(--sidebar-width)); }
         .page-content { display: none; animation: fadeIn 0.4s ease-out; }
         .page-content.active { display: block; }
