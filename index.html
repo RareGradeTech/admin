@@ -907,7 +907,11 @@ function friendlyAuthError(code) {
   }
 }
 
-document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  const ok = await askConfirm('Sign out?', "You'll need to sign in again to make any further changes.");
+  if (!ok) return;
+  signOut(auth);
+});
 
 let unsubShows = null, unsubCarousel = null, unsubNews = null, unsubCategories = null;
 
