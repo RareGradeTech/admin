@@ -642,6 +642,178 @@
   .news-card-admin-actions { display: flex; gap: 8px; margin-top: 2px; }
   .news-card-admin-actions .btn { flex: 1; }
 
+  /* ── POPUP ADS: SETTINGS CARD ── */
+  .popup-settings-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    padding: 20px 22px;
+    margin-bottom: 24px;
+  }
+  .popup-settings-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+  }
+  .popup-settings-row { margin-bottom: 18px; }
+  .popup-settings-row:last-child { margin-bottom: 0; }
+  .popup-settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+  }
+  .switch-row > span:first-child { display: flex; flex-direction: column; gap: 3px; }
+  .switch-row strong { font-size: 14px; font-weight: 700; }
+  .switch-row small { font-size: 12px; color: var(--muted); }
+
+  .switch { position: relative; flex-shrink: 0; }
+  .switch input {
+    position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer;
+  }
+  .switch-track {
+    display: block;
+    width: 46px;
+    height: 26px;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    border-radius: 30px;
+    position: relative;
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .switch-thumb {
+    position: absolute;
+    top: 2px; left: 2px;
+    width: 20px; height: 20px;
+    background: var(--muted);
+    border-radius: 50%;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s;
+  }
+  .switch input:checked + .switch-track { background: rgba(245,168,0,0.18); border-color: var(--gold); }
+  .switch input:checked + .switch-track .switch-thumb { transform: translateX(20px); background: var(--gold); }
+
+  .input-suffix-wrap { position: relative; }
+  .input-suffix-wrap input { padding-right: 68px; }
+  .input-suffix {
+    position: absolute;
+    right: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  /* ── POPUP ADS: CARD GRID ── */
+  .popup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .popup-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, opacity 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .popup-card:hover { border-color: var(--line); }
+  .popup-card.dragging { opacity: 0.4; }
+  .popup-card.drag-over { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+  .popup-card.is-disabled { opacity: 0.55; }
+
+  .popup-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: var(--card);
+    overflow: hidden;
+  }
+  .popup-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .popup-img-wrap .no-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    background: linear-gradient(145deg, #2a2a2a 0%, #444444 100%);
+  }
+  .popup-drag-handle {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 5px 7px;
+    cursor: grab;
+    color: white;
+    display: flex;
+    touch-action: none;
+    z-index: 2;
+  }
+  .popup-drag-handle:active { cursor: grabbing; }
+  .popup-order-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    z-index: 2;
+  }
+  .popup-ratio-badge {
+    position: absolute;
+    bottom: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    z-index: 2;
+  }
+
+  .popup-card-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .popup-card-body .field { margin-bottom: 0; }
+  .popup-card-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+  .popup-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--card);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+  }
+  .popup-status-row span:first-child { font-size: 12.5px; font-weight: 700; }
+
+  .popup-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--muted);
+  }
+  .popup-stats span { display: flex; align-items: center; gap: 4px; }
+  .popup-stats strong { color: var(--text); font-weight: 700; }
+
+  .popup-card-actions { display: flex; gap: 8px; margin-top: 2px; }
+  .popup-card-actions .btn { flex: 1; }
+
   /* ── Toast ── */
   #toastWrap {
     position: fixed;
@@ -724,6 +896,8 @@
     .row-actions .btn { flex: 1; }
     .news-grid { grid-template-columns: 1fr; }
     .news-card-admin-row { grid-template-columns: 1fr; }
+    .popup-grid { grid-template-columns: 1fr; }
+    .popup-settings-grid { grid-template-columns: 1fr; }
     .brand-text-sub { display: none; }
   }
 </style>
@@ -784,6 +958,7 @@
       <button class="tab-btn active" data-tab="shows">Daily Lineup <span class="count" id="showsCount">0</span></button>
       <button class="tab-btn" data-tab="carousel">Photo Carousel <span class="count" id="carouselCount">0</span></button>
       <button class="tab-btn" data-tab="news">News <span class="count" id="newsCount">0</span></button>
+      <button class="tab-btn" data-tab="popups">Popup Ads <span class="count" id="popupsCount">0</span></button>
     </div>
 
     <!-- SHOWS TAB -->
@@ -831,6 +1006,52 @@
       </div>
 
       <div class="news-grid" id="newsList"></div>
+    </section>
+
+    <!-- POPUP ADS TAB -->
+    <section class="tab-panel" id="tab-popups">
+      <div class="panel-head">
+        <div>
+          <h1>Popup Ads</h1>
+          <p>Manage the sponsored popup shown on the homepage. Add an ad for any interested company, set its image, button and link, and switch it on or off — changes go live instantly, no redeploy needed.</p>
+        </div>
+      </div>
+
+      <div class="popup-settings-card">
+        <h2>Popup behaviour</h2>
+        <div class="popup-settings-row">
+          <label class="switch-row" for="popupEnabledToggle">
+            <span>
+              <strong>Show popup ads on the homepage</strong>
+              <small>Turn the whole feature off without deleting your ads.</small>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="popupEnabledToggle" />
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </span>
+          </label>
+        </div>
+        <div class="popup-settings-row popup-settings-grid">
+          <div class="field" style="margin-bottom:0;">
+            <label>Delay before showing</label>
+            <div class="input-suffix-wrap">
+              <input type="number" id="popupDelayInput" min="0" max="120" step="1" />
+              <span class="input-suffix">seconds</span>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label>How often to show a visitor</label>
+            <select id="popupFrequencySelect">
+              <option value="every">Every page load</option>
+              <option value="session">Once per visit (session)</option>
+              <option value="day">Once every 24 hours</option>
+            </select>
+          </div>
+        </div>
+        <div class="helper-text" style="margin-top:14px;">If more than one ad is switched on below, a random one is shown to each visitor so ads rotate fairly.</div>
+      </div>
+
+      <div class="popup-grid" id="popupsGrid"></div>
     </section>
   </main>
 </div>
@@ -970,6 +1191,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 });
 
 let unsubShows = null, unsubCarousel = null, unsubNews = null, unsubCategories = null;
+let unsubPopups = null, unsubPopupSettings = null, unsubPopupEngagement = null;
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -988,6 +1210,9 @@ onAuthStateChanged(auth, (user) => {
     if (unsubCarousel) { unsubCarousel(); unsubCarousel = null; }
     if (unsubNews) { unsubNews(); unsubNews = null; }
     if (unsubCategories) { unsubCategories(); unsubCategories = null; }
+    if (unsubPopups) { unsubPopups(); unsubPopups = null; }
+    if (unsubPopupSettings) { unsubPopupSettings(); unsubPopupSettings = null; }
+    if (unsubPopupEngagement) { unsubPopupEngagement(); unsubPopupEngagement = null; }
   }
 });
 
@@ -1152,16 +1377,25 @@ const showsRef = ref(db, 'shows');
 const carouselRef = ref(db, 'carousel');
 const newsRef = ref(db, 'news');
 const newsCategoriesRef = ref(db, 'newsCategories');
+const popupsRef = ref(db, 'popups');
+const popupSettingsRef = ref(db, 'popupSettings');
+const popupEngagementRef = ref(db, 'popupEngagement');
 let showsCache = {};
 let carouselCache = {};
 let newsCache = {};
 let categoriesCache = {};
+let popupsCache = {};
+let popupSettingsCache = { enabled: true, delaySeconds: 4, frequency: 'session' };
+let popupEngagementCache = {};
 
 function initData() {
   if (unsubShows) unsubShows();
   if (unsubCarousel) unsubCarousel();
   if (unsubNews) unsubNews();
   if (unsubCategories) unsubCategories();
+  if (unsubPopups) unsubPopups();
+  if (unsubPopupSettings) unsubPopupSettings();
+  if (unsubPopupEngagement) unsubPopupEngagement();
 
   unsubShows = onValue(showsRef, async (snap) => {
     const val = snap.val();
@@ -1194,6 +1428,21 @@ function initData() {
     renderCategories();
     renderNews();
   }, (err) => { console.error(err); toast('Could not load categories: ' + err.message, 'error'); });
+
+  unsubPopups = onValue(popupsRef, (snap) => {
+    popupsCache = snap.val() || {};
+    renderPopups();
+  }, (err) => { console.error(err); toast('Could not load popup ads: ' + err.message, 'error'); });
+
+  unsubPopupSettings = onValue(popupSettingsRef, (snap) => {
+    popupSettingsCache = { enabled: true, delaySeconds: 4, frequency: 'session', ...(snap.val() || {}) };
+    renderPopupSettings();
+  }, (err) => { console.error(err); toast('Could not load popup settings: ' + err.message, 'error'); });
+
+  unsubPopupEngagement = onValue(popupEngagementRef, (snap) => {
+    popupEngagementCache = snap.val() || {};
+    renderPopups();
+  }, (err) => console.error(err));
 }
 
 async function seedShows() {
@@ -1601,6 +1850,262 @@ async function addSlide() {
     toast('New slide added — upload an image below');
   } catch (err) {
     toast('Could not add slide: ' + err.message, 'error');
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   POPUP ADS — GLOBAL SETTINGS
+   Read from /popupSettings by the homepage to decide whether
+   to show a popup at all, how long to wait, and how often a
+   given visitor should see one.
+─────────────────────────────────────────────────────────── */
+const popupEnabledToggle = document.getElementById('popupEnabledToggle');
+const popupDelayInput = document.getElementById('popupDelayInput');
+const popupFrequencySelect = document.getElementById('popupFrequencySelect');
+let settingsRenderGuard = false;
+
+function renderPopupSettings() {
+  settingsRenderGuard = true;
+  popupEnabledToggle.checked = !!popupSettingsCache.enabled;
+  popupDelayInput.value = popupSettingsCache.delaySeconds ?? 4;
+  popupFrequencySelect.value = popupSettingsCache.frequency || 'session';
+  settingsRenderGuard = false;
+}
+
+async function savePopupSettings(partial) {
+  setSaveState('saving');
+  try {
+    await update(popupSettingsRef, { ...partial, updatedAt: Date.now() });
+    setSaveState('synced');
+  } catch (err) {
+    setSaveState('error');
+    toast('Could not save popup settings: ' + err.message, 'error');
+  }
+}
+
+popupEnabledToggle.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  savePopupSettings({ enabled: popupEnabledToggle.checked });
+  toast(popupEnabledToggle.checked ? 'Popup ads turned on' : 'Popup ads turned off');
+});
+
+popupDelayInput.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  let val = parseInt(popupDelayInput.value, 10);
+  if (isNaN(val) || val < 0) val = 0;
+  if (val > 120) val = 120;
+  popupDelayInput.value = val;
+  savePopupSettings({ delaySeconds: val });
+});
+
+popupFrequencySelect.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  savePopupSettings({ frequency: popupFrequencySelect.value });
+});
+
+/* ──────────────────────────────────────────────────────────
+   POPUP ADS — CARD GRID
+   Each entry is one advertiser's popup: a square (1:1) image,
+   company name, a customizable call-to-action button, and the
+   URL it opens. The "Active" switch controls whether it's in
+   rotation on the homepage — if more than one ad is active,
+   the homepage picks one at random per visitor so ads rotate
+   fairly. Impressions/clicks are written by the homepage.
+─────────────────────────────────────────────────────────── */
+const popupsGrid = document.getElementById('popupsGrid');
+const popupsCountEl = document.getElementById('popupsCount');
+
+function renderPopups() {
+  const entries = sortedEntries(popupsCache);
+  popupsCountEl.textContent = entries.length;
+
+  let html = entries.map(([id, item], i) => popupCardTemplate(id, item, i)).join('');
+  html += `<button class="add-card-btn" id="addPopupBtn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add a popup ad
+  </button>`;
+
+  popupsGrid.innerHTML = html;
+
+  entries.forEach(([id]) => attachPopupHandlers(id));
+  document.getElementById('addPopupBtn').addEventListener('click', addPopupAd);
+
+  makeSortable(popupsGrid, '.popup-card', async (newOrderIds) => {
+    const updates = {};
+    newOrderIds.forEach((id, i) => { updates[`${id}/order`] = i; });
+    setSaveState('saving');
+    try {
+      await update(popupsRef, updates);
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not save new order: ' + err.message, 'error');
+    }
+  });
+}
+
+function popupCardTemplate(id, item, index) {
+  const hasImg = !!item.imageUrl;
+  const imgHtml = hasImg
+    ? `<img src="${escapeHtml(item.imageUrl)}" alt="" data-role="img" />`
+    : `<div class="no-img" data-role="noImg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>`;
+  const eng = popupEngagementCache[id] || {};
+
+  return `
+  <div class="popup-card${item.enabled ? '' : ' is-disabled'}" data-id="${id}" draggable="true">
+    <div class="popup-img-wrap" data-role="imgWrap">
+      ${imgHtml}
+      <div class="popup-drag-handle" title="Drag to reorder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+      </div>
+      <div class="popup-order-badge">#${index + 1}</div>
+      <div class="popup-ratio-badge">1:1</div>
+    </div>
+    <div class="popup-card-body">
+      <div class="field">
+        <label>Ad image (square, 1:1)</label>
+        <input type="file" accept="image/*" data-field="imageFile" />
+        <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
+        <div class="helper-text">Use a square image — it will be cropped to 1:1 on the popup.</div>
+      </div>
+      <div class="field">
+        <label>Company name</label>
+        <input type="text" data-field="companyName" value="${escapeHtml(item.companyName || '')}" placeholder="e.g. Acme Hardware" />
+      </div>
+      <div class="popup-card-row">
+        <div class="field">
+          <label>Button text</label>
+          <input type="text" data-field="ctaText" value="${escapeHtml(item.ctaText || '')}" placeholder="e.g. Visit Website" maxlength="30" />
+        </div>
+        <div class="field">
+          <label>Button link</label>
+          <input type="text" data-field="ctaUrl" value="${escapeHtml(item.ctaUrl || '')}" placeholder="https://…" />
+        </div>
+      </div>
+      <label class="popup-status-row">
+        <span>Active on homepage</span>
+        <span class="switch">
+          <input type="checkbox" data-field="enabled" ${item.enabled ? 'checked' : ''} />
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </span>
+      </label>
+      <div class="popup-stats">
+        <span>👁 <strong>${eng.impressions || 0}</strong> shown</span>
+        <span>🖱 <strong>${eng.clicks || 0}</strong> clicked</span>
+      </div>
+      <div class="popup-card-actions">
+        <button class="btn btn-gold btn-sm" data-role="save">Save</button>
+        <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function attachPopupHandlers(id) {
+  const card = popupsGrid.querySelector(`.popup-card[data-id="${id}"]`);
+  if (!card) return;
+
+  let pendingImageUrl = popupsCache[id]?.imageUrl || '';
+
+  const fileInput = card.querySelector('[data-field="imageFile"]');
+  const progressWrap = card.querySelector('[data-role="progress"]');
+  const progressBar = card.querySelector('[data-role="progressBar"]');
+  const imgWrap = card.querySelector('[data-role="imgWrap"]');
+
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+    progressWrap.classList.add('active');
+    progressBar.style.width = '0%';
+    try {
+      const url = await uploadToCloudinary(file, (pct) => { progressBar.style.width = pct + '%'; });
+      pendingImageUrl = url;
+      let imgEl = imgWrap.querySelector('img');
+      if (!imgEl) {
+        imgWrap.querySelector('[data-role="noImg"]')?.remove();
+        imgEl = document.createElement('img');
+        imgWrap.prepend(imgEl);
+      }
+      imgEl.src = url;
+      toast('Image uploaded — click Save to apply');
+    } catch (err) {
+      toast('Upload failed: ' + err.message, 'error');
+    } finally {
+      setTimeout(() => progressWrap.classList.remove('active'), 500);
+    }
+  });
+
+  card.querySelector('[data-role="save"]').addEventListener('click', async () => {
+    const companyName = card.querySelector('[data-field="companyName"]').value.trim();
+    const ctaText = card.querySelector('[data-field="ctaText"]').value.trim();
+    let ctaUrl = card.querySelector('[data-field="ctaUrl"]').value.trim();
+    const enabled = card.querySelector('[data-field="enabled"]').checked;
+
+    if (!pendingImageUrl) { toast('Please upload a square image first', 'error'); return; }
+    if (!companyName) { toast('Company name is required', 'error'); return; }
+    if (!ctaUrl) { toast('Button link is required', 'error'); return; }
+    if (!/^https?:\/\//i.test(ctaUrl)) ctaUrl = 'https://' + ctaUrl;
+
+    setSaveState('saving');
+    try {
+      await update(ref(db, `popups/${id}`), {
+        imageUrl: pendingImageUrl,
+        companyName,
+        ctaText: ctaText || 'Visit Website',
+        ctaUrl,
+        enabled,
+        updatedAt: Date.now()
+      });
+      setSaveState('synced');
+      toast(`"${companyName}" saved`);
+    } catch (err) {
+      setSaveState('error');
+      toast('Save failed: ' + err.message, 'error');
+    }
+  });
+
+  card.querySelector('[data-field="enabled"]').addEventListener('change', async (e) => {
+    card.classList.toggle('is-disabled', !e.target.checked);
+    setSaveState('saving');
+    try {
+      await update(ref(db, `popups/${id}`), { enabled: e.target.checked, updatedAt: Date.now() });
+      setSaveState('synced');
+    } catch (err) {
+      setSaveState('error');
+      toast('Could not update: ' + err.message, 'error');
+    }
+  });
+
+  card.querySelector('[data-role="delete"]').addEventListener('click', async () => {
+    const name = popupsCache[id]?.companyName || 'this ad';
+    const ok = await askConfirm('Delete this popup ad?', `"${name}" will stop showing on the homepage. This can't be undone.`);
+    if (!ok) return;
+    try {
+      await remove(ref(db, `popups/${id}`));
+      await remove(ref(db, `popupEngagement/${id}`));
+      toast(`"${name}" deleted`);
+    } catch (err) {
+      toast('Delete failed: ' + err.message, 'error');
+    }
+  });
+}
+
+async function addPopupAd() {
+  const entries = sortedEntries(popupsCache);
+  const newAd = {
+    imageUrl: '',
+    companyName: '',
+    ctaText: 'Visit Website',
+    ctaUrl: '',
+    enabled: false,
+    order: entries.length,
+    createdAt: Date.now()
+  };
+  try {
+    await push(popupsRef, newAd);
+    toast('New popup ad added — fill it in below, then switch it Active');
+  } catch (err) {
+    toast('Could not add popup ad: ' + err.message, 'error');
   }
 }
 
