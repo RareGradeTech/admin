@@ -1013,7 +1013,7 @@
       <div class="panel-head">
         <div>
           <h1>Popup Ads</h1>
-          <p>Manage the sponsored popup shown on the homepage. Add an ad for any interested company, set its image, button and link, and switch it on or off — changes go live instantly, no redeploy needed.</p>
+          <p>Manage the sponsored popup shown on the homepage and the news page. Add an ad for any interested company, set its image, button and link, and switch it on or off — changes go live instantly, no redeploy needed.</p>
         </div>
       </div>
 
@@ -1027,6 +1027,18 @@
             </span>
             <span class="switch">
               <input type="checkbox" id="popupEnabledToggle" />
+              <span class="switch-track"><span class="switch-thumb"></span></span>
+            </span>
+          </label>
+        </div>
+        <div class="popup-settings-row">
+          <label class="switch-row" for="popupEnabledNewsToggle">
+            <span>
+              <strong>Show popup ads on the news page</strong>
+              <small>Controlled separately from the homepage — switch it on or off any time.</small>
+            </span>
+            <span class="switch">
+              <input type="checkbox" id="popupEnabledNewsToggle" />
               <span class="switch-track"><span class="switch-thumb"></span></span>
             </span>
           </label>
@@ -1048,7 +1060,7 @@
             </select>
           </div>
         </div>
-        <div class="helper-text" style="margin-top:14px;">If more than one ad is switched on below, a random one is shown to each visitor so ads rotate fairly.</div>
+        <div class="helper-text" style="margin-top:14px;">The delay and frequency above apply wherever popups are switched on. If more than one ad is active below, a random one is shown to each visitor so ads rotate fairly.</div>
       </div>
 
       <div class="popup-grid" id="popupsGrid"></div>
@@ -1385,7 +1397,7 @@ let carouselCache = {};
 let newsCache = {};
 let categoriesCache = {};
 let popupsCache = {};
-let popupSettingsCache = { enabled: true, delaySeconds: 4, frequency: 'session' };
+let popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, frequency: 'session' };
 let popupEngagementCache = {};
 
 function initData() {
@@ -1435,7 +1447,7 @@ function initData() {
   }, (err) => { console.error(err); toast('Could not load popup ads: ' + err.message, 'error'); });
 
   unsubPopupSettings = onValue(popupSettingsRef, (snap) => {
-    popupSettingsCache = { enabled: true, delaySeconds: 4, frequency: 'session', ...(snap.val() || {}) };
+    popupSettingsCache = { enabled: true, newsEnabled: false, delaySeconds: 4, frequency: 'session', ...(snap.val() || {}) };
     renderPopupSettings();
   }, (err) => { console.error(err); toast('Could not load popup settings: ' + err.message, 'error'); });
 
@@ -1855,11 +1867,13 @@ async function addSlide() {
 
 /* ──────────────────────────────────────────────────────────
    POPUP ADS — GLOBAL SETTINGS
-   Read from /popupSettings by the homepage to decide whether
-   to show a popup at all, how long to wait, and how often a
-   given visitor should see one.
+   Read from /popupSettings by the homepage and the news page.
+   `enabled` and `newsEnabled` switch the feature on/off for
+   each page independently; delaySeconds and frequency are
+   shared behaviour settings that apply wherever popups are on.
 ─────────────────────────────────────────────────────────── */
 const popupEnabledToggle = document.getElementById('popupEnabledToggle');
+const popupEnabledNewsToggle = document.getElementById('popupEnabledNewsToggle');
 const popupDelayInput = document.getElementById('popupDelayInput');
 const popupFrequencySelect = document.getElementById('popupFrequencySelect');
 let settingsRenderGuard = false;
@@ -1867,6 +1881,7 @@ let settingsRenderGuard = false;
 function renderPopupSettings() {
   settingsRenderGuard = true;
   popupEnabledToggle.checked = !!popupSettingsCache.enabled;
+  popupEnabledNewsToggle.checked = !!popupSettingsCache.newsEnabled;
   popupDelayInput.value = popupSettingsCache.delaySeconds ?? 4;
   popupFrequencySelect.value = popupSettingsCache.frequency || 'session';
   settingsRenderGuard = false;
@@ -1886,7 +1901,13 @@ async function savePopupSettings(partial) {
 popupEnabledToggle.addEventListener('change', () => {
   if (settingsRenderGuard) return;
   savePopupSettings({ enabled: popupEnabledToggle.checked });
-  toast(popupEnabledToggle.checked ? 'Popup ads turned on' : 'Popup ads turned off');
+  toast(popupEnabledToggle.checked ? 'Popup ads turned on for the homepage' : 'Popup ads turned off for the homepage');
+});
+
+popupEnabledNewsToggle.addEventListener('change', () => {
+  if (settingsRenderGuard) return;
+  savePopupSettings({ newsEnabled: popupEnabledNewsToggle.checked });
+  toast(popupEnabledNewsToggle.checked ? 'Popup ads turned on for the news page' : 'Popup ads turned off for the news page');
 });
 
 popupDelayInput.addEventListener('change', () => {
@@ -1908,9 +1929,10 @@ popupFrequencySelect.addEventListener('change', () => {
    Each entry is one advertiser's popup: a square (1:1) image,
    company name, a customizable call-to-action button, and the
    URL it opens. The "Active" switch controls whether it's in
-   rotation on the homepage — if more than one ad is active,
-   the homepage picks one at random per visitor so ads rotate
-   fairly. Impressions/clicks are written by the homepage.
+   rotation — wherever popups are switched on (homepage and/or
+   news page), if more than one ad is active a random one is
+   picked per visitor so ads rotate fairly. Impressions/clicks
+   are written by whichever page shows the popup.
 ─────────────────────────────────────────────────────────── */
 const popupsGrid = document.getElementById('popupsGrid');
 const popupsCountEl = document.getElementById('popupsCount');
@@ -1983,7 +2005,7 @@ function popupCardTemplate(id, item, index) {
         </div>
       </div>
       <label class="popup-status-row">
-        <span>Active on homepage</span>
+        <span>Active in rotation</span>
         <span class="switch">
           <input type="checkbox" data-field="enabled" ${item.enabled ? 'checked' : ''} />
           <span class="switch-track"><span class="switch-thumb"></span></span>
@@ -2078,7 +2100,7 @@ function attachPopupHandlers(id) {
 
   card.querySelector('[data-role="delete"]').addEventListener('click', async () => {
     const name = popupsCache[id]?.companyName || 'this ad';
-    const ok = await askConfirm('Delete this popup ad?', `"${name}" will stop showing on the homepage. This can't be undone.`);
+    const ok = await askConfirm('Delete this popup ad?', `"${name}" will stop showing everywhere it's active. This can't be undone.`);
     if (!ok) return;
     try {
       await remove(ref(db, `popups/${id}`));
