@@ -567,23 +567,80 @@
   .category-chip button:hover { background: var(--danger); color: white; }
   .category-empty { color: var(--muted); font-size: 12.5px; }
 
-  /* ── NEWS: ITEM ROWS (reuses .show-row / .show-fields / .item-list layout) ── */
+  /* ── NEWS: CARD GRID (mirrors the Photo Carousel card layout) ── */
+  .news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+
+  .news-card-admin {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .news-card-admin:hover { border-color: var(--line); }
+  .news-card-admin.dragging { opacity: 0.4; }
+  .news-card-admin.drag-over { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+
   .news-thumb {
-    width: 96px;
-    height: 96px;
-    border-radius: 12px;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
     flex-shrink: 0;
     overflow: hidden;
     background: var(--card);
-    border: 1px solid var(--line-soft);
   }
-  .news-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .news-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
   .news-thumb .no-img {
     width: 100%; height: 100%;
     display: flex; align-items: center; justify-content: center;
     color: var(--muted);
     background: linear-gradient(145deg, #2a2a2a 0%, #444444 100%);
   }
+  .news-card-drag-handle {
+    position: absolute;
+    top: 8px; left: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 5px 7px;
+    cursor: grab;
+    color: white;
+    display: flex;
+    touch-action: none;
+    z-index: 2;
+  }
+  .news-card-drag-handle:active { cursor: grabbing; }
+  .news-card-order-badge {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: rgba(10,10,10,0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 7px;
+    padding: 4px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold);
+    z-index: 2;
+  }
+
+  .news-card-admin-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .news-card-admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .news-card-admin-row .field { margin-bottom: 0; }
+  .news-card-admin-body .field { margin-bottom: 0; }
+  .news-card-admin-actions { display: flex; gap: 8px; margin-top: 2px; }
+  .news-card-admin-actions .btn { flex: 1; }
 
   /* ── Toast ── */
   #toastWrap {
@@ -662,9 +719,11 @@
     main { padding: 24px 16px 90px; }
     .show-row { flex-wrap: wrap; }
     .show-fields { grid-template-columns: 1fr; }
-    .show-preview, .news-thumb { width: 100%; height: 140px; }
+    .show-preview { width: 100%; height: 140px; }
     .row-actions { flex-direction: row; width: 100%; }
     .row-actions .btn { flex: 1; }
+    .news-grid { grid-template-columns: 1fr; }
+    .news-card-admin-row { grid-template-columns: 1fr; }
     .brand-text-sub { display: none; }
   }
 </style>
@@ -771,10 +830,7 @@
         <div class="category-chip-list" id="categoryList"></div>
       </div>
 
-      <div class="item-list" id="newsList"></div>
-      <div style="margin-top:14px;">
-        <button class="add-show-row" id="addNewsBtn">+ Add a news card</button>
-      </div>
+      <div class="news-grid" id="newsList"></div>
     </section>
   </main>
 </div>
@@ -908,7 +964,7 @@ function friendlyAuthError(code) {
 }
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-  const ok = await askConfirm('Sign out?', "You'll need to sign in again to make any further changes.");
+  const ok = await askConfirm('Sign out?', "You'll be returned to the login screen and will need to sign back in to make further changes.", 'Sign Out', 'btn-gold');
   if (!ok) return;
   signOut(auth);
 });
@@ -981,9 +1037,11 @@ const confirmOk = document.getElementById('confirmOk');
 const confirmCancel = document.getElementById('confirmCancel');
 let confirmResolver = null;
 
-function askConfirm(title, body) {
+function askConfirm(title, body, confirmText = 'Delete', confirmClass = 'btn-danger') {
   confirmTitle.textContent = title;
   confirmBody.textContent = body;
+  confirmOk.textContent = confirmText;
+  confirmOk.className = `btn btn-sm ${confirmClass}`;
   confirmOverlay.classList.add('active');
   return new Promise((resolve) => { confirmResolver = resolve; });
 }
@@ -1639,17 +1697,29 @@ function renderNews() {
 
   if (entries.length === 0) {
     newsList.innerHTML = `
-      <div class="empty-state">
+      <div class="empty-state" style="grid-column:1/-1;">
         <h3>No news posted yet</h3>
         <p>Add your first story — it'll appear on the public news page instantly.</p>
-      </div>`;
+      </div>
+      <button class="add-card-btn" id="addNewsBtn">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Add a news card
+      </button>`;
+    document.getElementById('addNewsBtn').addEventListener('click', addNewsCard);
     return;
   }
 
-  newsList.innerHTML = entries.map(([id, item]) => newsRowTemplate(id, item)).join('');
-  entries.forEach(([id]) => attachNewsRowHandlers(id));
+  let html = entries.map(([id, item], i) => newsRowTemplate(id, item, i)).join('');
+  html += `<button class="add-card-btn" id="addNewsBtn">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+    Add a news card
+  </button>`;
+  newsList.innerHTML = html;
 
-  makeSortable(newsList, '.news-row', async (newOrderIds) => {
+  entries.forEach(([id]) => attachNewsRowHandlers(id));
+  document.getElementById('addNewsBtn').addEventListener('click', addNewsCard);
+
+  makeSortable(newsList, '.news-card-admin', async (newOrderIds) => {
     // Top of the admin list = highest order = first card on the site.
     const updates = {};
     newOrderIds.forEach((id, i) => { updates[`${id}/order`] = newOrderIds.length - 1 - i; });
@@ -1664,56 +1734,62 @@ function renderNews() {
   });
 }
 
-function newsRowTemplate(id, item) {
+function newsRowTemplate(id, item, index) {
   const hasImg = !!item.imageUrl;
   const previewHtml = hasImg
     ? `<img src="${escapeHtml(item.imageUrl)}" alt="" />`
     : `<div class="no-img"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>`;
 
   return `
-  <div class="show-row news-row" data-id="${id}" draggable="true">
-    <div class="drag-handle" title="Drag to reorder">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+  <div class="news-card-admin" data-id="${id}" draggable="true">
+    <div class="news-thumb" data-role="preview">
+      ${previewHtml}
+      <div class="news-card-drag-handle" title="Drag to reorder">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="8" cy="6" r="1.6"/><circle cx="16" cy="6" r="1.6"/><circle cx="8" cy="12" r="1.6"/><circle cx="16" cy="12" r="1.6"/><circle cx="8" cy="18" r="1.6"/><circle cx="16" cy="18" r="1.6"/></svg>
+      </div>
+      <div class="news-card-order-badge">#${index + 1}</div>
     </div>
 
-    <div class="news-thumb" data-role="preview">${previewHtml}</div>
-
-    <div class="show-fields">
+    <div class="news-card-admin-body">
       <div class="field">
         <label>Headline</label>
         <input type="text" data-field="title" value="${escapeHtml(item.title || '')}" placeholder="e.g. Road closures this weekend" />
       </div>
-      <div class="field">
-        <label>Date</label>
-        <input type="date" data-field="date" value="${escapeHtml(item.date || '')}" />
-      </div>
-      <div class="field full">
-        <label>Category</label>
-        <select data-field="category">${categoryOptionsHtml(item.category || '')}</select>
-      </div>
 
-      <div class="field full">
-        <div class="upload-row">
-          <div class="field" style="margin-bottom:0;">
-            <label>Image</label>
-            <input type="file" accept="image/*" data-field="imageFile" />
-            <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
-            <div class="helper-text">Or paste an image URL below.</div>
-            <input type="text" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}" placeholder="https://…" style="margin-top:8px;" />
-          </div>
+      <div class="news-card-admin-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" data-field="date" value="${escapeHtml(item.date || '')}" />
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select data-field="category">${categoryOptionsHtml(item.category || '')}</select>
         </div>
       </div>
-    </div>
 
-    <div class="row-actions">
-      <button class="btn btn-gold btn-sm" data-role="save">Save</button>
-      <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+      <div class="field">
+        <label>Storyline</label>
+        <textarea data-field="storyline" placeholder="The full story text readers will see on the article page…">${escapeHtml(item.storyline || '')}</textarea>
+      </div>
+
+      <div class="field">
+        <label>Image</label>
+        <input type="file" accept="image/*" data-field="imageFile" />
+        <div class="upload-progress" data-role="progress"><div class="upload-progress-bar" data-role="progressBar"></div></div>
+        <div class="helper-text">Or paste an image URL below.</div>
+        <input type="text" data-field="imageUrl" value="${escapeHtml(item.imageUrl || '')}" placeholder="https://…" style="margin-top:8px;" />
+      </div>
+
+      <div class="news-card-admin-actions">
+        <button class="btn btn-gold btn-sm" data-role="save">Save</button>
+        <button class="btn btn-danger btn-sm" data-role="delete">Delete</button>
+      </div>
     </div>
   </div>`;
 }
 
 function attachNewsRowHandlers(id) {
-  const row = newsList.querySelector(`.news-row[data-id="${id}"]`);
+  const row = newsList.querySelector(`.news-card-admin[data-id="${id}"]`);
   if (!row) return;
 
   const previewEl = row.querySelector('[data-role="preview"]');
@@ -1756,6 +1832,7 @@ function attachNewsRowHandlers(id) {
       title: row.querySelector('[data-field="title"]').value.trim(),
       date: row.querySelector('[data-field="date"]').value,
       category: row.querySelector('[data-field="category"]').value,
+      storyline: row.querySelector('[data-field="storyline"]').value.trim(),
       imageUrl: row.querySelector('[data-field="imageUrl"]').value.trim(),
       updatedAt: Date.now()
     };
@@ -1785,13 +1862,14 @@ function attachNewsRowHandlers(id) {
   });
 }
 
-document.getElementById('addNewsBtn').addEventListener('click', async () => {
+async function addNewsCard() {
   const entries = sortedNewsEntries();
   const topOrder = entries.length ? (entries[0][1].order ?? entries.length - 1) : -1;
   const newItem = {
     title: 'New story',
     date: new Date().toISOString().slice(0, 10),
     category: '',
+    storyline: '',
     imageUrl: '',
     order: topOrder + 1,
     createdAt: Date.now()
@@ -1802,7 +1880,7 @@ document.getElementById('addNewsBtn').addEventListener('click', async () => {
   } catch (err) {
     toast('Could not add story: ' + err.message, 'error');
   }
-});
+}
 </script>
 </body>
 </html>
